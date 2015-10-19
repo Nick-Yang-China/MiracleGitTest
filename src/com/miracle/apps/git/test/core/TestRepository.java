@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -20,7 +21,9 @@ import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.errors.UnmergedPathException;
+import org.eclipse.jgit.internal.JGitText;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -30,10 +33,12 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.RepositoryCache.FileKey;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.FS_Win32;
 import org.eclipse.jgit.util.FileUtils;
 
 /**
@@ -45,6 +50,8 @@ public class TestRepository {
 	Repository repository;
 
 	String workdirPrefix;
+	
+	File gitDir;
 
 	/**
 	 * Creates a new test repository
@@ -53,11 +60,18 @@ public class TestRepository {
 	 * @throws IOException
 	 */
 	public TestRepository(File gitDir) throws IOException {
-		Repository tmpRepository = FileRepositoryBuilder.create(gitDir);
-		tmpRepository.create();
-		tmpRepository.close();
+		
 		// use repository instance from RepositoryCache!
-		repository = RepositoryCache.open(FileKey.exact(gitDir, FS.DETECTED), false);
+		
+		repository = new FileRepositoryBuilder().setGitDir(gitDir).readEnvironment().findGitDir().build();
+		
+		 if(repository.getObjectDatabase().exists()){
+			 System.out.println("The Repository already created!");
+		 }else{
+			 System.out.println("Create the Repository!");
+			 repository.create(false);
+		 }
+		
 		workdirPrefix = repository.getWorkTree().getAbsolutePath();
 		workdirPrefix = workdirPrefix.replace('\\', '/');
 		if (!workdirPrefix.endsWith("/")) //$NON-NLS-1$
@@ -85,6 +99,16 @@ public class TestRepository {
 		return repository;
 	}
 
+	
+	/**
+	 * @return the wrapped repository
+	 * @throws IOException 
+	 * @throws RepositoryNotFoundException 
+	 */
+	public Repository getRepository(File gitDir) throws RepositoryNotFoundException, IOException {
+		return RepositoryCache.open(FileKey.lenient(gitDir, FS.DETECTED));
+	}
+	
 	/**
 	 * create an initial commit containing a file "dummy" in the
 	 *
@@ -478,6 +502,13 @@ public class TestRepository {
 		}
 	}
 
+	public void clear(){
+		RepositoryCache.clear();
+	}
+	
+	public void close(Repository repository){
+		RepositoryCache.close(repository);
+	}
 	/**
 	 * Connect a project to this repository
 	 *
@@ -511,7 +542,6 @@ public class TestRepository {
 	private DirCacheEntry getDirCacheEntry(String path) throws IOException {
 		String repoPath = getRepoRelativePath(path);
 		DirCache dc = DirCache.read(repository.getIndexFile(), repository.getFS());
-
 		return dc.getEntry(repoPath);
 	}
 }
