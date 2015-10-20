@@ -18,6 +18,10 @@ public abstract class GitTestCase {
 
 	protected File gitDir;
 	protected Repository repository;
+	
+	protected Repository repository1;
+	
+	protected Repository repository2;
 
 	@Before
 	public void setUp() throws Exception {
@@ -26,7 +30,8 @@ public abstract class GitTestCase {
 
 	@After
 	public void tearDown() throws Exception {
-		
+//		System.out.println(gitDir.getParent());
+//		
 //		if (gitDir.exists())
 //			FileUtils.delete(gitDir, FileUtils.RECURSIVE | FileUtils.RETRY);
 //		SystemReader.setInstance(null);
