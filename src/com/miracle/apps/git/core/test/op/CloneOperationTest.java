@@ -96,7 +96,7 @@ public class CloneOperationTest extends GitTestCase {
 		URIish uri = new URIish("https://github.com/Nick-Yang-China/GitDemo.git");
 		UsernamePasswordCredentialsProvider crePro=new UsernamePasswordCredentialsProvider("Nick-Yang-China", "!Test0001");
 		CloneOperation clop = new CloneOperation(uri, true, null, workdir2,
-				null, null, 30);
+				refName, "origin", 0);
 		clop.setCredentialsProvider(crePro);
 		clop.run();
 
