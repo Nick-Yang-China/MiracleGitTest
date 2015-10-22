@@ -34,7 +34,7 @@ public class RemoveFromIndexOperationTest extends GitTestCase {
 		
 		repositoryUtil = new RepositoryUtil(gitDir);
 		
-		repository=repositoryUtil.createLocalRepositoryByGitDir();
+		repository=repositoryUtil.getRepository();
 	}
 
 	@Override

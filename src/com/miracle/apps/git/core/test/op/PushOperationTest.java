@@ -47,9 +47,6 @@ import com.miracle.apps.git.core.RepositoryUtil;
 public class PushOperationTest extends GitTestCase {
 	private static final String INVALID_URI = "invalid-uri";
 	
-	private final  String AUTHOR = "The Author <The.author@some.com>";
-
-	private final  String COMMITTER = "The Commiter <The.committer@some.com>";
 	Repository repository1;
 	Repository repository2;
 	
@@ -78,7 +75,7 @@ public class PushOperationTest extends GitTestCase {
 		
 		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
 		
-		repository1=repositoryUtil.createLocalRepositoryByGitDir();
+		repository1=repositoryUtil.getRepository();
 		
 		File file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);
@@ -238,6 +235,8 @@ public class PushOperationTest extends GitTestCase {
 		// Commit on repository 2
 //		RevCommit commit = repository2.addAndCommit(project, new File(workdir2, "test.txt"), "Commit in repository 2");
 		System.out.println(repository2.getBranch());
+		new Git(repository2).checkout().setName("refs/heads/test").call();
+		System.out.println(repository2.getBranch());
 		ArrayList<String> files=new ArrayList<String>();
 		File file=new File(workdir2,"test.txt");
 		FileUtils.createNewFile(file);
@@ -252,29 +251,29 @@ public class PushOperationTest extends GitTestCase {
 		// We want to push from repository 2 to 1 (because repository 2 already
 		// has tracking set up)
 //		URIish remote = repository1.getUri();
-		URIish remote=new URIish("file:///" + repository1.getDirectory().toString());
-		
-		String trackingRef = "refs/remotes/origin/master";
-		RemoteRefUpdate update = new RemoteRefUpdate(
-				repository2, "HEAD", "refs/heads/master", false,
-				null, null);
-		PushOperationSpecification spec = new PushOperationSpecification();
-		spec.addURIRefUpdates(remote, Arrays.asList(update));
-
-		PushOperation push = new PushOperation(repository2,
-				spec, false, 0);
-		push.run();
-
-		PushOperationResult result = push.getOperationResult();
-		PushResult pushResult = result.getPushResult(remote);
-		TrackingRefUpdate trf=pushResult.getTrackingRefUpdate(trackingRef);
-		System.out.println(trf.getLocalName());
-		System.out.println(trf.getLocalName());
-		assertNotNull("Expected result to have tracking ref update", pushResult.getTrackingRefUpdate(trackingRef));
-
-		ObjectId trackingId = repository2.resolve(trackingRef);
-		assertEquals("Expected tracking branch to be updated", cop.getCommit().getId(), trackingId);
-		new Git(repository1).checkout().setName("refs/heads/master").call();
+//		URIish remote=new URIish("file:///" + repository1.getDirectory().toString());
+//		
+//		String trackingRef = "refs/remotes/origin/master";
+//		RemoteRefUpdate update = new RemoteRefUpdate(
+//				repository2, "HEAD", "refs/heads/master", false,
+//				trackingRef, null);
+//		PushOperationSpecification spec = new PushOperationSpecification();
+//		spec.addURIRefUpdates(remote, Arrays.asList(update));
+//
+//		PushOperation push = new PushOperation(repository2,
+//				spec, false, 0);
+//		push.run();
+//
+//		PushOperationResult result = push.getOperationResult();
+//		PushResult pushResult = result.getPushResult(remote);
+//		TrackingRefUpdate trf=pushResult.getTrackingRefUpdate(trackingRef);
+//		System.out.println(trf.getLocalName());
+//		System.out.println(trf.getRemoteName());
+//		assertNotNull("Expected result to have tracking ref update", pushResult.getTrackingRefUpdate(trackingRef));
+//
+//		ObjectId trackingId = repository2.resolve(trackingRef);
+//		assertEquals("Expected tracking branch to be updated", cop.getCommit().getId(), trackingId);
+//		new Git(repository1).checkout().setName("refs/heads/master").call();
 //		testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
 //		assertTrue(testFile.exists());
 	}

@@ -26,9 +26,6 @@ import com.miracle.apps.git.test.core.GitTestCase;
 import com.miracle.apps.git.core.RepositoryUtil;
 
 public class CommitOperationTest extends GitTestCase {
-	public final String AUTHOR = "The Author <The.author@some.com>";
-
-	public final String COMMITTER = "The Commiter <The.committer@some.com>";
 	
 	ArrayList<String> list=new ArrayList<String>();
 
@@ -42,7 +39,7 @@ public class CommitOperationTest extends GitTestCase {
 		
 		repositoryUtil = new RepositoryUtil(gitDir);
 		
-		repository=repositoryUtil.createLocalRepositoryByGitDir();
+		repository=repositoryUtil.getRepository();
 	}
 
 	@Override

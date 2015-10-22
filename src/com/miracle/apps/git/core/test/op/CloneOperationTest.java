@@ -59,7 +59,7 @@ public class CloneOperationTest extends GitTestCase {
 		
 		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
 		
-		repository1=repositoryUtil.createLocalRepositoryByGitDir();
+		repository1=repositoryUtil.getRepository();
 		
 		File file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);

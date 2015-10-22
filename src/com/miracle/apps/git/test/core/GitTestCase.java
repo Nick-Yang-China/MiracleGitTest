@@ -15,7 +15,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 public abstract class GitTestCase {
+	public final String AUTHOR = "The Author <The.author@some.com>";
 
+	public final String COMMITTER = "The Commiter <The.committer@some.com>";
+	
 	protected File gitDir;
 	protected Repository repository;
 	
