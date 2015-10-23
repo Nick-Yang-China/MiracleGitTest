@@ -95,7 +95,6 @@ public class RepositoryCacheTest extends GitTestCase {
 		
 		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
 		
-		
 		assertNotNull(repository1);
 		assertEquals(repository, repository1);
 		
@@ -129,6 +128,20 @@ public class RepositoryCacheTest extends GitTestCase {
 		
 		assertEquals(repository, repository2);
 		assertEquals(repository1, repository3);
+		
+	}
+	
+	@Test
+	public void testcloseRepo() throws Exception {
+		File file1=repository.getDirectory();
+		RepositoryCache.register(repository);
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		assertNotNull(repository1);
+		assertEquals(repository.hashCode(), repository1.hashCode());
+		RepositoryCache.close(repository);
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		assertNotEquals(repository.hashCode(), repository1.hashCode());
+
 		
 	}
 }
