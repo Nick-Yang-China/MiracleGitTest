@@ -3,6 +3,7 @@ package com.miracle.apps.git.core.test.op;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.MergeCommand.FastForwardMode;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -25,6 +27,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.lib.TagBuilder;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTag;
@@ -108,7 +111,7 @@ public class MergeOperationTest extends GitTestCase {
 	public void testMergeFF() throws Exception {
 		MergeOperation mo=new MergeOperation(repository, MASTER, null);
 		mo.execute();
-		
+		System.out.println(mo.getResult().getMergeStatus().toString());
 		System.out.println(secondCommit);
 		System.out.println(repository.resolve(SIDE));
 		assertTrue(repository.resolve(SIDE).equals(secondCommit));
@@ -116,7 +119,72 @@ public class MergeOperationTest extends GitTestCase {
 		
 	}
 	
+	@Test
+	public void testMergeNoFF() throws Exception{
+		setMerge(FastForwardMode.NO_FF);
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, null);
+//		operation.setFastForwardMode(FastForwardMode.NO_FF);
+		operation.execute();
+		System.out.println(operation.getResult().getMergeStatus().toString());
+		assertEquals(3, countCommitsInHead());
+	}
 	
+	@Test
+	public void testMergeFFOnly()throws Exception{
+		setMerge(FastForwardMode.NO_FF);
+		File file2=new File(workdir, "file2.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "File2-1");
+		repositoryUtil.track(file2);
+		RevCommit commit=repositoryUtil.commit("side commit 1");
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, null);
+//		operation.setFastForwardMode(FastForwardMode.FF_ONLY);
+		operation.execute();
+		
+		System.out.println(operation.getResult().getMergeStatus().toString());
+		assertTrue(repository.resolve(SIDE).equals(commit));
+	}
+
+	@Test
+	public void testMergeoptionsNoFF() throws Exception{
+		setMergeOptions("side", FastForwardMode.NO_FF);
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, null);
+		operation.execute();
+		assertEquals(3, countCommitsInHead());
+	}
+	
+	@Test
+	public void testMergeoptionsFFOnly() throws Exception{
+		setMergeOptions("side",FastForwardMode.FF_ONLY);
+		File file2=new File(workdir, "file2.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "File2-1");
+		repositoryUtil.track(file2);
+		RevCommit commit=repositoryUtil.commit("side commit 1");
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, null);
+		operation.execute();
+		assertTrue(repository.resolve(SIDE).equals(commit));
+	}
+	
+	private void setMerge(FastForwardMode ffMode)throws IOException{
+		StoredConfig config=repository.getConfig();
+		config.setEnum(ConfigConstants.CONFIG_KEY_MERGE, null, ConfigConstants.CONFIG_KEY_FF,
+				FastForwardMode.Merge.valueOf(ffMode));
+		config.save();
+	}
+	
+	
+	private void setMergeOptions(String branch,FastForwardMode ffMode)
+			throws IOException{
+		StoredConfig config=repository.getConfig();
+		config.setEnum(ConfigConstants.CONFIG_BRANCH_SECTION, branch, 
+				ConfigConstants.CONFIG_KEY_MERGEOPTIONS, ffMode);
+		config.save();
+	}
 	
 	private int countCommitsInHead() throws GitAPIException {
 		LogCommand log = new Git(repository).log();
