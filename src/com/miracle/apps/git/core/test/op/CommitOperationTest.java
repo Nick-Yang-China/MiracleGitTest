@@ -71,8 +71,7 @@ public class CommitOperationTest extends GitTestCase {
 		
 		
 		
-		CommitOperation commitOperation = new CommitOperation(list, null, AUTHOR, COMMITTER, "third commit c.txt");
-		commitOperation.setRepository(repository);
+		CommitOperation commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
 		commitOperation.execute();
 
 	}
@@ -87,8 +86,7 @@ public class CommitOperationTest extends GitTestCase {
 		
 		new AddToIndexOperation(list, repository).execute();
 		
-		CommitOperation commitOperation = new CommitOperation(list, null, AUTHOR, COMMITTER, "fourth commit sub");
-		commitOperation.setRepository(repository);
+		CommitOperation commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "fourth commit sub");
 		commitOperation.execute();
 	}
 	
