@@ -105,10 +105,10 @@ public class PushOperationTest extends GitTestCase {
 		if(repository2!=null)
 			repository2.close();
 		
-//		if (workdir.exists())
-//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
-//		if (workdir2.exists())
-//			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir.exists())
+			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir2.exists())
+			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	

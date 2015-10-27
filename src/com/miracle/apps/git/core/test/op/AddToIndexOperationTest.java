@@ -29,7 +29,7 @@ public class AddToIndexOperationTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		gitDir = new File("D://MLGitHome", Constants.DOT_GIT);
+		gitDir = new File("D://MLGitHome/.git", Constants.DOT_GIT);
 		
 		repositoryUtil = new RepositoryUtil(gitDir);
 		
@@ -40,13 +40,12 @@ public class AddToIndexOperationTest extends GitTestCase {
 	@After
 	public void tearDown() throws Exception {
 		repositoryUtil.dispose();
-//		RepositoryUtil.removeLocalRepository(repository);
+		repositoryUtil.removeLocalRepository(repository);
 		super.tearDown();
 	}
 
 	@Test
 	public void testTrackFile() throws Exception {
-		
 		File file1 = new File(repository.getWorkTree(), "a.txt");
 		FileUtils.createNewFile(file1);
 		PrintWriter writer = new PrintWriter(file1);
