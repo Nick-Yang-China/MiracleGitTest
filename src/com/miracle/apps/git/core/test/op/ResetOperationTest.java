@@ -103,6 +103,7 @@ public class ResetOperationTest extends GitTestCase {
 	@Test
 	public void testHardReset() throws Exception {
 		setupRepository();
+		System.out.println(initialCommit.getName());
 		String fileInIndexPath = fileInIndex.getAbsolutePath();
 		new ResetOperation(repository, initialCommit.getName(), ResetType.HARD)
 				.execute();
