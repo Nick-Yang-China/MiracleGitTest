@@ -88,7 +88,7 @@ public class PushOperationTest extends GitTestCase {
 		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
 		
 		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
-		clop.run();
+		clop.execute();
 		
 		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
 		
@@ -146,7 +146,7 @@ public class PushOperationTest extends GitTestCase {
 		// push from repository1 to repository2
 		System.out.println(repository2.getBranch());
 		PushOperation pop=createPushOperation();
-		pop.run();
+		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE, getStatus(pop.getOperationResult()));
 		
 		ArrayList<String> files=new ArrayList<String>();
@@ -163,19 +163,19 @@ public class PushOperationTest extends GitTestCase {
 		cop.execute();
 		
 		pop=createPushOperation();
-		pop.run();
+		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.OK, getStatus(pop.getOperationResult()));
 		
 		try {
 			// assert that we cannot run this again
-			pop.run();
+			pop.execute();
 			fail("Expected Exception not thrown");
 		} catch (IllegalStateException e) {
 			// expected
 		}
 		
 		pop = createPushOperation();
-		pop.run();
+		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE, getStatus(pop.getOperationResult()));
 		
 		File testFile = new File(workdir2,repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
@@ -207,7 +207,7 @@ public class PushOperationTest extends GitTestCase {
 	public void testInvalidUriDuringPush() throws Exception {
 
 		PushOperation pop = createInvalidPushOperation();
-		pop.run();
+		pop.execute();
 		PushOperationResult result = pop.getOperationResult();
 		String errorMessage = result.getErrorMessage(new URIish(INVALID_URI));
 		

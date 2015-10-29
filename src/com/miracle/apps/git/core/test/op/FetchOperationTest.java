@@ -75,7 +75,7 @@ public class FetchOperationTest extends GitTestCase {
 		CloneOperation clop=new CloneOperation(uri, true, null, 
 				workdir2, "refs/heads/master", Constants.DEFAULT_REMOTE_NAME, 0);
 		
-		clop.run();
+		clop.execute();
 		
 		repository1=new RepositoryUtil(new File(workdir2,Constants.DOT_GIT)).getRepository();
 		
@@ -115,7 +115,7 @@ public class FetchOperationTest extends GitTestCase {
 		System.out.println(config.getName());
 		
 		FetchOperation fo=new FetchOperation(repository1, config, 0, false);
-		fo.run();
+		fo.execute();
 		FetchResult result=fo.getOperationResult().getFetchResult();
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
 		assertEquals(secondcommit.getId(), tru.getNewObjectId());
@@ -141,7 +141,7 @@ public class FetchOperationTest extends GitTestCase {
 		System.out.println(rs.getDestination());
 		System.out.println(rs.getSource());
 		FetchOperation fo=new FetchOperation(repository1, uri, Arrays.asList(rs), 0, false);
-		fo.run();
+		fo.execute();
 		FetchResult result=fo.getOperationResult().getFetchResult();
 		
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
@@ -152,7 +152,7 @@ public class FetchOperationTest extends GitTestCase {
 	@Test
 	public void testFetchOperationwithOtherBranch() throws Exception{
 		//create branch of test and check out
-		new CreateLocalBranchOperation(repository, "test", repository.getRef("master"), null).setCheckOutFlag(false).execute();
+		new CreateLocalBranchOperation(repository, "test", repository.getRef("master"), null).setCheckOutFlag(true).execute();
 		
 		assertEquals("test", repository.getBranch());
 		
@@ -175,7 +175,7 @@ public class FetchOperationTest extends GitTestCase {
 		System.out.println(rs.getDestination());
 		System.out.println(rs.getSource());
 		FetchOperation fo=new FetchOperation(repository1, uri, Arrays.asList(rs), 0, false);
-		fo.run();
+		fo.execute();
 		FetchResult result=fo.getOperationResult().getFetchResult();
 		System.out.println(result.getTrackingRefUpdates());
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");

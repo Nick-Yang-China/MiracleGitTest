@@ -78,7 +78,7 @@ public class PullOperationTest extends GitTestCase {
 		CloneOperation clop=new CloneOperation(uri, true, null, 
 				workdir2, "refs/heads/master", Constants.DEFAULT_REMOTE_NAME, 0);
 		
-		clop.run();
+		clop.execute();
 		
 		repository1=new RepositoryUtil(new File(workdir2,Constants.DOT_GIT)).getRepository();
 		

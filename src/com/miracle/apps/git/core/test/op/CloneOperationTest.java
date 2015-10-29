@@ -107,7 +107,7 @@ public class CloneOperationTest extends GitTestCase {
 
 		CloneOperation clop = new CloneOperation(uri, true, null, workdir2,
 		refName, "origin", 0);
-		clop.run();
+		clop.execute();
 
 		Repository clonedRepo = FileRepositoryBuilder.create(new File(workdir2,
 				Constants.DOT_GIT));

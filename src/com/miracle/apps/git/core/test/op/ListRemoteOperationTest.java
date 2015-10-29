@@ -79,7 +79,7 @@ public class ListRemoteOperationTest extends GitTestCase {
 		CloneOperation clop=new CloneOperation(uri, true, null, 
 				workdir2, "refs/heads/master", Constants.DEFAULT_REMOTE_NAME, 0);
 		
-		clop.run();
+		clop.execute();
 		
 		repository1=new RepositoryUtil(new File(workdir2,Constants.DOT_GIT)).getRepository();
 		
@@ -117,7 +117,7 @@ public class ListRemoteOperationTest extends GitTestCase {
 		URIish uri = new URIish("file:///"
 				+ repository1.getDirectory().getPath());
 		ListRemoteOperation lrop = new ListRemoteOperation(repository, uri, 0);
-		lrop.run();
+		lrop.execute();
 		InteratorRemoteRefs(lrop.getRemoteRefs());
 		assertEquals(4, lrop.getRemoteRefs().size());
 		assertNotNull(lrop.getRemoteRef("refs/heads/test"));
@@ -125,7 +125,7 @@ public class ListRemoteOperationTest extends GitTestCase {
 		uri = new URIish("file:///"
 				+ repository.getDirectory().getPath());
 		lrop = new ListRemoteOperation(repository1, uri, 0);
-		lrop.run();
+		lrop.execute();
 		InteratorRemoteRefs(lrop.getRemoteRefs());
 		assertEquals(2, lrop.getRemoteRefs().size());
 		assertNotNull(lrop.getRemoteRef("refs/heads/master"));
@@ -163,9 +163,9 @@ public class ListRemoteOperationTest extends GitTestCase {
 		ListRemoteOperation lrop = new ListRemoteOperation(repository
 				, uri, 0);
 		try {
-			lrop.run();
+			lrop.getRemoteRefs();
 			fail("Expected Exception not thrown");
-		} catch (InvocationTargetException e) {
+		} catch (IllegalStateException e) {
 			// expected
 		}
 	}
