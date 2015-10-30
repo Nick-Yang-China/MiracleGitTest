@@ -75,6 +75,30 @@ public class CommitOperationTest extends GitTestCase {
 		commitOperation.execute();
 		testCommitStatus();
 	}
+	
+	@Test
+	public void testDoubleCommit() throws Exception {
+		
+		File file1 = new File(repository.getWorkTree(), "c.txt");
+		FileUtils.createNewFile(file1);
+		PrintWriter writer = new PrintWriter(file1);
+		writer.print("content c");
+		writer.close();
+		
+		list.add(repositoryUtil.getRepoRelativePath(file1.getAbsolutePath()));
+		
+		new AddToIndexOperation(list, repository).execute();
+		
+//		System.out.println(CommitOperation.CheckIfNoChangesBeforeCommit(repository));
+		
+		CommitOperation commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
+		commitOperation.execute();
+		
+		System.out.println(CommitOperation.CheckIfNoChangesBeforeCommit(repository));
+		commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
+		commitOperation.execute();
+//		testCommitStatus();
+	}
 
 	@Test
 	public void testCommitAll()throws Exception {
