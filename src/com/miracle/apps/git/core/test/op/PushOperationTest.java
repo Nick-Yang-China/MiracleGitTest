@@ -23,6 +23,8 @@ import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.CredentialsProviderUserInfo;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
@@ -79,22 +81,22 @@ public class PushOperationTest extends GitTestCase {
 		
 		File file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);
-		
+		repositoryUtil.appendFileContent(file, "Contect file1");
 		Git git=new Git(repository1);
 		
 		git.add().addFilepattern("file1.txt").call();
 		git.commit().setMessage("First Commit").call();
 		
-		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
-		
-		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
-		clop.execute();
-		
-		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
-		
-		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
-		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
-		createBranch.update();
+//		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
+//		
+//		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
+//		clop.execute();
+//		
+//		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
+//		
+//		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
+//		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
+//		createBranch.update();
 	}
 
 	@Override
@@ -187,6 +189,25 @@ public class PushOperationTest extends GitTestCase {
 		new Git(repository2).checkout().setName("refs/heads/test").call();
 		testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
 		assertTrue(testFile.exists());
+	}
+	
+	@Test
+	public void testPushWithGitHub() throws Exception {		
+		// set up push from repository1 to repository2
+		// we cannot re-use the RemoteRefUpdate!!!
+		UsernamePasswordCredentialsProvider up=new UsernamePasswordCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
+		PushOperationSpecification spec = new PushOperationSpecification();
+		// the remote is repo2
+		URIish remote = new URIish("https://github.com/heliangjignjing2011/GitTesting.git");
+		// update master upon master
+		List<RemoteRefUpdate> refUpdates = new ArrayList<RemoteRefUpdate>();
+		RemoteRefUpdate update = new RemoteRefUpdate(repository1, "refs/heads/master","refs/heads/master", true, null, null);
+		refUpdates.add(update);
+		spec.addURIRefUpdates(remote, refUpdates);
+		// now we can construct the push operation
+		PushOperation pop = new PushOperation(repository1,spec, false, 30);
+		pop.setCredentialsProvider(up);
+		pop.execute();
 	}
 	
 	private PushOperation createInvalidPushOperation() throws Exception {
