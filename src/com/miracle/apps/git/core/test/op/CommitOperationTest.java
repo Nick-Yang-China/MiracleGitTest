@@ -77,7 +77,7 @@ public class CommitOperationTest extends GitTestCase {
 	}
 	
 	@Test
-	public void testDoubleCommit() throws Exception {
+	public void testDoubleCommitException() throws Exception {
 		
 		File file1 = new File(repository.getWorkTree(), "c.txt");
 		FileUtils.createNewFile(file1);
@@ -92,11 +92,20 @@ public class CommitOperationTest extends GitTestCase {
 //		System.out.println(CommitOperation.CheckIfNoChangesBeforeCommit(repository));
 		
 		CommitOperation commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
+//		commitOperation.setCommitAll(true);
 		commitOperation.execute();
+		System.out.println(commitOperation.isIfNoChanges());
 		
-		System.out.println(CommitOperation.CheckIfNoChangesBeforeCommit(repository));
 		commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
+//		commitOperation.setCommitAll(true);
 		commitOperation.execute();
+		System.out.println(commitOperation.isIfNoChanges());
+		
+		
+		commitOperation = new CommitOperation(repository,list, null, AUTHOR, COMMITTER, "third commit c.txt");
+//		commitOperation.setCommitAll(true);
+		commitOperation.execute();
+		System.out.println(commitOperation.isIfNoChanges());
 //		testCommitStatus();
 	}
 
