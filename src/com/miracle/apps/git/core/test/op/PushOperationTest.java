@@ -87,16 +87,16 @@ public class PushOperationTest extends GitTestCase {
 		git.add().addFilepattern("file1.txt").call();
 		git.commit().setMessage("First Commit").call();
 		
-//		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
-//		
-//		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
-//		clop.execute();
-//		
-//		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
-//		
-//		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
-//		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
-//		createBranch.update();
+		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
+		
+		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
+		clop.execute();
+		
+		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
+		
+		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
+		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
+		createBranch.update();
 	}
 
 	@Override
@@ -224,19 +224,19 @@ public class PushOperationTest extends GitTestCase {
 		PushOperation pop = new PushOperation(local, spec, false, 0);
 		return pop;
 	}
-	@Test
-	public void testInvalidUriDuringPush() throws Exception {
-
-		PushOperation pop = createInvalidPushOperation();
-		pop.execute();
-		PushOperationResult result = pop.getOperationResult();
-		String errorMessage = result.getErrorMessage(new URIish(INVALID_URI));
-		
-		System.out.println(errorMessage);
-		
-		assertNotNull(errorMessage);
-		assertTrue(errorMessage.contains(INVALID_URI));
-	}
+//	@Test
+//	public void testInvalidUriDuringPush() throws Exception {
+//
+//		PushOperation pop = createInvalidPushOperation();
+//		pop.execute();
+//		PushOperationResult result = pop.getOperationResult();
+//		String errorMessage = result.getErrorMessage(new URIish(INVALID_URI));
+//		
+//		System.out.println(errorMessage);
+//		
+//		assertNotNull(errorMessage);
+//		assertTrue(errorMessage.contains(INVALID_URI));
+//	}
 	
 	@Test
 	public void testIllegalStateExceptionOnGetResultWithoutRun()
@@ -272,30 +272,30 @@ public class PushOperationTest extends GitTestCase {
 		// We want to push from repository 2 to 1 (because repository 2 already
 		// has tracking set up)
 //		URIish remote = repository1.getUri();
-//		URIish remote=new URIish("file:///" + repository1.getDirectory().toString());
-//		
-//		String trackingRef = "refs/remotes/origin/master";
-//		RemoteRefUpdate update = new RemoteRefUpdate(
-//				repository2, "HEAD", "refs/heads/master", false,
-//				trackingRef, null);
-//		PushOperationSpecification spec = new PushOperationSpecification();
-//		spec.addURIRefUpdates(remote, Arrays.asList(update));
-//
-//		PushOperation push = new PushOperation(repository2,
-//				spec, false, 0);
-//		push.run();
-//
-//		PushOperationResult result = push.getOperationResult();
-//		PushResult pushResult = result.getPushResult(remote);
-//		TrackingRefUpdate trf=pushResult.getTrackingRefUpdate(trackingRef);
-//		System.out.println(trf.getLocalName());
-//		System.out.println(trf.getRemoteName());
-//		assertNotNull("Expected result to have tracking ref update", pushResult.getTrackingRefUpdate(trackingRef));
-//
-//		ObjectId trackingId = repository2.resolve(trackingRef);
-//		assertEquals("Expected tracking branch to be updated", cop.getCommit().getId(), trackingId);
-//		new Git(repository1).checkout().setName("refs/heads/master").call();
-//		testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
-//		assertTrue(testFile.exists());
+		URIish remote=new URIish("file:///" + repository1.getDirectory().toString());
+		
+		String trackingRef = "refs/remotes/origin/master";
+		RemoteRefUpdate update = new RemoteRefUpdate(
+				repository2, "HEAD", "refs/heads/master", false,
+				trackingRef, null);
+		PushOperationSpecification spec = new PushOperationSpecification();
+		spec.addURIRefUpdates(remote, Arrays.asList(update));
+
+		PushOperation push = new PushOperation(repository2,
+				spec, false, 0);
+		push.execute();
+
+		PushOperationResult result = push.getOperationResult();
+		PushResult pushResult = result.getPushResult(remote);
+		TrackingRefUpdate trf=pushResult.getTrackingRefUpdate(trackingRef);
+		System.out.println(trf.getLocalName());
+		System.out.println(trf.getRemoteName());
+		assertNotNull("Expected result to have tracking ref update", pushResult.getTrackingRefUpdate(trackingRef));
+
+		ObjectId trackingId = repository2.resolve(trackingRef);
+		assertEquals("Expected tracking branch to be updated", cop.getCommit().getId(), trackingId);
+		new Git(repository1).checkout().setName("refs/heads/master").call();
+		File testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
+		assertTrue(testFile.exists());
 	}
 }
