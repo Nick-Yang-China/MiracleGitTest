@@ -10,11 +10,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.miracle.apps.git.core.op.CommitHistoryOperation;
+import com.miracle.apps.git.core.op.LogOperation;
 import com.miracle.apps.git.test.core.GitTestCase;
 import com.miracle.apps.git.core.RepositoryUtil;
 
-public class CommitHistoryOperationTest extends GitTestCase {
+public class LogOperationTest extends GitTestCase {
 	
 	File workdir;
 	
@@ -55,7 +55,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryAll() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository);
+		LogOperation cho=new LogOperation(repository);
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
 		while(it.hasNext()){
@@ -67,7 +67,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryAllWithMaxCount() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository);
+		LogOperation cho=new LogOperation(repository);
 		cho.setMaxCount(2);
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
@@ -80,7 +80,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryAnyObjectId() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository,initialCommit.getId());
+		LogOperation cho=new LogOperation(repository,initialCommit.getId());
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
 		while(it.hasNext()){
@@ -92,7 +92,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryAnyObjectIdWithMaxCount() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository,initialCommit.getId());
+		LogOperation cho=new LogOperation(repository,initialCommit.getId());
 		cho.setMaxCount(2);
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
@@ -106,7 +106,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryPath() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository,"dummy.txt");
+		LogOperation cho=new LogOperation(repository,"dummy.txt");
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
 		while(it.hasNext()){
@@ -118,7 +118,7 @@ public class CommitHistoryOperationTest extends GitTestCase {
 	@Test
 	public void testCommitHistoryPathWithMaxCount() throws Exception {
 		setupRepository();
-		CommitHistoryOperation cho=new CommitHistoryOperation(repository,"dummy.txt");
+		LogOperation cho=new LogOperation(repository,"dummy.txt");
 		cho.setMaxCount(1);
 		cho.execute();
 		Iterator<RevCommit> it=cho.getCommitResults().iterator();
