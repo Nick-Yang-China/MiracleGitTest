@@ -89,7 +89,7 @@ public class PushOperationTest extends GitTestCase {
 		
 		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
 		
-		CloneOperation clop=new CloneOperation(uri, true, null, workdir2, "refs/heads/master", "origin", 0);
+		CloneOperation clop=new CloneOperation(uri.toString(), true, null, workdir2, "refs/heads/master", "origin", 0,null,null);
 		clop.execute();
 		
 		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));

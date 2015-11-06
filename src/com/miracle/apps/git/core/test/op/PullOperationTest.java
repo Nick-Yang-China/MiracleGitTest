@@ -75,8 +75,8 @@ public class PullOperationTest extends GitTestCase {
 		
 		URIish uri=new URIish("file:///"
 				+ repository.getDirectory().toString());
-		CloneOperation clop=new CloneOperation(uri, true, null, 
-				workdir2, "refs/heads/master", Constants.DEFAULT_REMOTE_NAME, 0);
+		CloneOperation clop=new CloneOperation(uri.toString(), true, null, 
+				workdir2, "refs/heads/master", Constants.DEFAULT_REMOTE_NAME, 0,null,null);
 		
 		clop.execute();
 		

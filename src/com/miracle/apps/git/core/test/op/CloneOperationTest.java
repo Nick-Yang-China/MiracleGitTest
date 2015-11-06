@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -32,7 +34,7 @@ import com.miracle.apps.git.test.core.GitTestCase;
 import com.miracle.apps.git.core.RepositoryUtil;
 
 public class CloneOperationTest extends GitTestCase {
-	Repository repository1;
+//	Repository repository1;
 	
 	File workdir;
 	File workdir2;
@@ -59,12 +61,12 @@ public class CloneOperationTest extends GitTestCase {
 		
 		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
 		
-		repository1=repositoryUtil.getRepository();
+		repository=repositoryUtil.getRepository();
 		
 		File file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);
 		
-		Git git=new Git(repository1);
+		Git git=new Git(repository);
 		
 		git.add().addFilepattern("file1.txt").call();
 		git.commit().setMessage("First Commit").call();
@@ -86,27 +88,25 @@ public class CloneOperationTest extends GitTestCase {
 	@Override
 	@After
 	public void tearDown() throws Exception {
-		if(repository1!=null)
-			repository1.close();
+		if(repository!=null)
+			repository.close();
 		
-		if (workdir.exists())
-			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
-		if (workdir2.exists())
-			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
+//		if (workdir.exists())
+//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+//		if (workdir2.exists())
+//			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
-	private void cloneAndAssert(String refName) throws Exception {
-//		URIish uri = new URIish("https://github.com/Nick-Yang-China/GitDemo.git");
-//		UsernamePasswordCredentialsProvider crePro=new UsernamePasswordCredentialsProvider("Nick-Yang-China", "!Test0001");
-//		CloneOperation clop = new CloneOperation(uri, true, workdir2);
+	private void cloneAndAssert(String refName,boolean BranchFlag) throws Exception {		
+		String uri = "file:///"+ repository.getDirectory().toString();
+//		String uri = "ssh://root@192.168.1.111:22/project/gitserver/831server/831dev.git";
+		CloneOperation clop;
+		if(BranchFlag)
+			 clop = new CloneOperation(uri, false, Arrays.asList("refs/heads/master"), workdir2, null, "origin", 0, null, null);
+		else
+			 clop = new CloneOperation(uri, true, null, workdir2, refName, "origin", 0, null, null);
 		
-		URIish uri = new URIish("file:///"
-				+ repository1.getDirectory().toString());
-
-
-		CloneOperation clop = new CloneOperation(uri, true, null, workdir2,
-		refName, "origin", 0);
 		clop.execute();
 
 		Repository clonedRepo = FileRepositoryBuilder.create(new File(workdir2,
@@ -131,14 +131,17 @@ public class CloneOperationTest extends GitTestCase {
 						ConfigConstants.CONFIG_REMOTE_SECTION, "origin",
 						"fetch"));
 		
+		for(Ref ref:Git.wrap(clonedRepo).branchList().call()){
+			System.out.println(ref.getName());
+		}
 		
 		clonedRepo.close();
 	}
 	
 	@Test
 	public void testClone() throws Exception {
-		String fullRefName = "refs/heads/master";
-		cloneAndAssert(fullRefName);
+		String fullRefName = "master";
+		cloneAndAssert(fullRefName,false);
 
 		assertTrue(new File(workdir2, "file1.txt").exists());
 		assertTrue(new File(workdir2, "file2.txt").exists());
@@ -147,7 +150,7 @@ public class CloneOperationTest extends GitTestCase {
 	@Test
 	public void testCloneBranch() throws Exception {
 		String branchName = "dev";
-		cloneAndAssert(branchName);
+		cloneAndAssert(branchName,false);
 
 		assertTrue(new File(workdir2, "file1.txt").exists());
 		assertTrue(new File(workdir2, "file2.txt").exists());
@@ -157,10 +160,18 @@ public class CloneOperationTest extends GitTestCase {
 	@Test
 	public void testCloneTag() throws Exception {
 		String tagName = "tag";
-		cloneAndAssert(tagName);
+		cloneAndAssert(tagName,false);
 
 		assertTrue(new File(workdir2, "file1.txt").exists());
 		assertFalse(new File(workdir2, "file2.txt").exists());
 		assertFalse(new File(workdir2, "file3.txt").exists());
 	}
+		
+	@Test
+	public void testCloneWithBranchList() throws Exception{
+		String branchName = "master";
+		cloneAndAssert(branchName,true);
+		
+	}
+	
 }
