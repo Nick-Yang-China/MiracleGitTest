@@ -10,13 +10,18 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RemoveNoteCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
+import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -30,6 +35,7 @@ import org.junit.Test;
 import com.miracle.apps.git.core.op.BranchOperation;
 import com.miracle.apps.git.core.op.CloneOperation;
 import com.miracle.apps.git.core.op.CreateLocalBranchOperation;
+import com.miracle.apps.git.core.op.CreateLocalBranchOperation.UpstreamConfig;
 import com.miracle.apps.git.core.op.FetchOperation;
 import com.miracle.apps.git.core.op.PullOperation;
 import com.miracle.apps.git.test.core.GitTestCase;
@@ -170,6 +176,30 @@ public class PullOperationTest extends GitTestCase {
 		
 		assertTrue(new File(workdir2,"file2.txt").exists());
 		
+	}
+	
+	@Test
+	public void testPullOperationWithOtherLocalBranchCheckOut()throws Exception{
+		//create branch of test and check out in repository1 
+		new CreateLocalBranchOperation(repository1, "test", repository.getRef("master"), UpstreamConfig.MERGE).setCheckOutFlag(true).execute();
+		assertEquals("test", repository1.getBranch());
+		
+		//create file of file2.txt on branch of master in repository
+		File file2=new File(workdir,"file2.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "testing pull");
+		repositoryUtil.track(file2);
+		RevCommit secondcommit=repositoryUtil.commit("second Commit");		
+		
+		//the repository1 pull from repository
+		PullOperation po=new PullOperation(repository1, 0,null);
+		po.execute();
+		PullResult pr=po.getPullResult();
+		System.out.println(pr.toString());
+		System.out.println(pr.getFetchResult().getMessages());
+		System.out.println(pr.getMergeResult().getMergeStatus().name());
+//		System.out.println(pr.getRebaseResult().toString());
+		assertTrue(new File(workdir2,"file2.txt").exists());
 	}
 	
 }

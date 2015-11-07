@@ -113,7 +113,7 @@ public class PushOperationTestWithGitHub extends GitTestCase {
 		spec.addURIRefUpdates(remote, refUpdates);
 		// now we can construct the push operation
 		PushOperation pop = new PushOperation(repository,spec, false, 30);
-		pop.setCredentialsProvider(up);
+		pop.setCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
 		pop.execute();
 		
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.OK, getStatus(pop.getOperationResult()));
@@ -128,7 +128,7 @@ public class PushOperationTestWithGitHub extends GitTestCase {
 		specs=specs.setSourceDestination("refs/heads/master", "refs/heads/master");
 		specs=specs.setForceUpdate(true);
 		PushOperation pop = new PushOperation(repository, remote.toString(),Arrays.asList(specs), false, 30);
-		pop.setCredentialsProvider(up);
+		pop.setCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
 		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.OK, getStatus(pop.getOperationResult()));
 	}

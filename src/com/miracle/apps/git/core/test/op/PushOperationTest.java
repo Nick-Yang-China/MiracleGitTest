@@ -195,7 +195,7 @@ public class PushOperationTest extends GitTestCase {
 	public void testPushWithGitHub() throws Exception {		
 		// set up push from repository1 to repository2
 		// we cannot re-use the RemoteRefUpdate!!!
-		UsernamePasswordCredentialsProvider up=new UsernamePasswordCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
+//		UsernamePasswordCredentialsProvider up=new UsernamePasswordCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
 		PushOperationSpecification spec = new PushOperationSpecification();
 		// the remote is repo2
 		URIish remote = new URIish("https://github.com/heliangjignjing2011/GitTesting.git");
@@ -206,7 +206,7 @@ public class PushOperationTest extends GitTestCase {
 		spec.addURIRefUpdates(remote, refUpdates);
 		// now we can construct the push operation
 		PushOperation pop = new PushOperation(repository1,spec, false, 30);
-		pop.setCredentialsProvider(up);
+		pop.setCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
 		pop.execute();
 	}
 	
