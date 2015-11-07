@@ -202,4 +202,24 @@ public class PullOperationTest extends GitTestCase {
 		assertTrue(new File(workdir2,"file2.txt").exists());
 	}
 	
+	@Test
+	public void testPullOperationWithNonBranch()throws Exception{
+		//create file of file2.txt in repository
+		File file2=new File(workdir,"file2.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "testing fetch");
+		repositoryUtil.track(file2);
+		RevCommit secondcommit=repositoryUtil.commit("second Commit");
+		
+		//the repository1 pull from repository with none branch name
+		URIish uri=new URIish("file:///" + repository.getDirectory().toString());
+		
+		PullOperation po=new PullOperation(repository1, 0,"refs/heads/dev");
+		po.execute();
+		PullResult pr=po.getPullResult();
+		System.out.println(pr.getFetchedFrom());
+		
+		assertTrue(new File(workdir2,"file2.txt").exists());
+	}
+	
 }
