@@ -65,8 +65,7 @@ public class DiffOperationTest extends GitTestCase {
 		DiffOperation dop=new DiffOperation(repository,"dummy.txt");
 		dop.execute();
 		
-		System.out.println(dop.getDiffInfo().length());
-		System.out.println(dop.getDiffInfo());
+		System.out.println(dop.toString());
 		
 	}
 	
@@ -82,8 +81,7 @@ public class DiffOperationTest extends GitTestCase {
 		DiffOperation dop=new DiffOperation(repository,repositoryUtil.getRepoRelativePath(folder.getAbsolutePath()));
 		dop.execute();
 		
-		System.out.println(dop.getDiffInfo().length());
-		System.out.println(dop.getDiffInfo());
+		System.out.println(dop.toString());
 		
 	}
 	
@@ -96,7 +94,7 @@ public class DiffOperationTest extends GitTestCase {
 		
 		DiffOperation dop=new DiffOperation(repository,"dummy.txt");
 		dop.execute();
-		System.out.println(dop.getDiffInfo());
+		System.out.println(dop.toString());
 		
 	}
 	

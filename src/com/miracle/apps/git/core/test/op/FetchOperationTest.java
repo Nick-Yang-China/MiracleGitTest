@@ -111,7 +111,6 @@ public class FetchOperationTest extends GitTestCase {
 		
 		RemoteConfig config=new RemoteConfig(repository.getConfig(), Constants.DEFAULT_REMOTE_NAME);
 		config.addURI(uri);
-		
 		System.out.println(config.getName());
 		
 		FetchOperation fo=new FetchOperation(repository1, config, 0, false);
@@ -119,7 +118,7 @@ public class FetchOperationTest extends GitTestCase {
 		FetchResult result=fo.getOperationResult().getFetchResult();
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
 		assertEquals(secondcommit.getId(), tru.getNewObjectId());
-		
+		System.out.println(fo.toString());
 	}
 	
 	@Test
@@ -146,6 +145,7 @@ public class FetchOperationTest extends GitTestCase {
 		
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
 		assertEquals(secondcommit.getId(), tru.getNewObjectId());
+		System.out.println(fo.toString());
 		
 	}
 	
@@ -180,6 +180,48 @@ public class FetchOperationTest extends GitTestCase {
 		System.out.println(result.getTrackingRefUpdates());
 		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
 		assertEquals(secondcommit.getId(), tru.getNewObjectId());
+		System.out.println(fo.toString());
+		
+	}
+	
+	@Test
+	public void testFetchOperationwithManyBranch() throws Exception{
+		//create file of file2.txt in repository on master
+		File file2=new File(workdir,"file2.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "testing fetch");
+		repositoryUtil.track(file2);
+		RevCommit firstcommit=repositoryUtil.commit("first Commit");
+		
+		//create branch of test and check out
+		new CreateLocalBranchOperation(repository, "test", repository.getRef("master"), null).setCheckOutFlag(true).execute();
+		
+		assertEquals("test", repository.getBranch());
+		
+		//create file of file3.txt on branch of test in repository
+		file2=new File(workdir,"file3.txt");
+		FileUtils.createNewFile(file2);
+		repositoryUtil.appendFileContent(file2, "testing fetch");
+		repositoryUtil.track(file2);
+		RevCommit secondcommit=repositoryUtil.commit("second Commit");
+		
+		
+		
+		// the repository1 fetch from repository
+		URIish uri=new URIish("file:///" + repository.getDirectory().toString());
+		
+//		RefSpec rs=new RefSpec("refs/heads/master:refs/remotes/origin/master");
+		RefSpec rs=new RefSpec();
+		rs=rs.setForceUpdate(false);
+		rs=rs.setSourceDestination(Constants.R_HEADS+"*", "refs/remotes/origin/*");
+		System.out.println(rs.getDestination());
+		System.out.println(rs.getSource());
+		FetchOperation fo=new FetchOperation(repository1, uri, Arrays.asList(rs), 0, false);
+		fo.execute();
+		FetchResult result=fo.getOperationResult().getFetchResult();
+		TrackingRefUpdate tru=result.getTrackingRefUpdate("refs/remotes/origin/master");
+//		assertEquals(secondcommit.getId(), tru.getNewObjectId());
+		System.out.println(fo.toString());
 		
 	}
 	

@@ -110,12 +110,14 @@ public class MergeOperationTest extends GitTestCase {
 	@Test
 	public void testMergeFF() throws Exception {
 		MergeOperation mo=new MergeOperation(repository, MASTER, null);
+		mo.setFastForwardMode(FastForwardMode.FF);
 		mo.execute();
 		System.out.println(mo.getResult().getMergeStatus().toString());
 		System.out.println(secondCommit);
 		System.out.println(repository.resolve(SIDE));
 		assertTrue(repository.resolve(SIDE).equals(secondCommit));
 		assertEquals(2, countCommitsInHead());
+		System.out.println(mo.toString());
 		
 	}
 	
@@ -128,11 +130,12 @@ public class MergeOperationTest extends GitTestCase {
 		operation.execute();
 		System.out.println(operation.getResult().getMergeStatus().toString());
 		assertEquals(3, countCommitsInHead());
+		System.out.println(operation.toString());
 	}
 	
 	@Test
 	public void testMergeFFOnly()throws Exception{
-		setMerge(FastForwardMode.NO_FF);
+		setMerge(FastForwardMode.FF_ONLY);
 		File file2=new File(workdir, "file2.txt");
 		FileUtils.createNewFile(file2);
 		repositoryUtil.appendFileContent(file2, "File2-1");
@@ -144,7 +147,8 @@ public class MergeOperationTest extends GitTestCase {
 		operation.execute();
 		
 		System.out.println(operation.getResult().getMergeStatus().toString());
-		assertTrue(repository.resolve(SIDE).equals(commit));
+		System.out.println(operation.toString());
+		assertTrue(repository.resolve(SIDE).equals(operation.getResult().getNewHead()));
 	}
 
 	@Test
@@ -154,6 +158,7 @@ public class MergeOperationTest extends GitTestCase {
 		MergeOperation operation=new MergeOperation(repository, MASTER, null);
 		operation.execute();
 		assertEquals(3, countCommitsInHead());
+		System.out.println(operation.toString());
 	}
 	
 	@Test
@@ -168,6 +173,33 @@ public class MergeOperationTest extends GitTestCase {
 		MergeOperation operation=new MergeOperation(repository, MASTER, null);
 		operation.execute();
 		assertTrue(repository.resolve(SIDE).equals(commit));
+		System.out.println(operation.toString());
+	}
+	
+	@Test
+	public void testMergeWithConflicts() throws Exception{
+		setMergeOptions("side",FastForwardMode.FF);
+		File file2=new File(workdir, "file1.txt");
+		repositoryUtil.appendFileContent(file2, "\nFile2-1");
+		repositoryUtil.track(file2);
+		RevCommit commit=repositoryUtil.commit("side commit 1");
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, "RECURSIVE");
+		operation.execute();
+		assertTrue(repository.resolve(SIDE).equals(commit));
+		System.out.println(operation.toString());
+	}
+	
+	@Test
+	public void testMergeWithCheckOutConflicts() throws Exception{
+		setMergeOptions("side",FastForwardMode.FF);
+		File file2=new File(workdir, "file1.txt");
+		repositoryUtil.appendFileContent(file2, "\nFile2-1");
+		repositoryUtil.track(file2);
+		
+		MergeOperation operation=new MergeOperation(repository, MASTER, null);
+		operation.execute();
+		System.out.println(operation.toString());
 	}
 	
 	private void setMerge(FastForwardMode ffMode)throws IOException{

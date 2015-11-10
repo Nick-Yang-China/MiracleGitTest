@@ -108,7 +108,7 @@ public class TagOperationTest extends GitTestCase {
 		TagOperation top=new TagOperation(repository, newTag, false);
 		top.execute();
 		assertFalse("Tags should not be empty", repository.getTags().isEmpty());
-		
+		System.out.println(top.toString());
 		try {
 			top.execute();
 			fail("Expected Exception not thrown");

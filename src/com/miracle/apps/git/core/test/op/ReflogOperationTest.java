@@ -70,15 +70,7 @@ public class ReflogOperationTest extends GitTestCase {
 		
 		ReflogOperation ro=new ReflogOperation(repository);
 		ro.execute();
-		Collection<ReflogEntry> re=ro.getReflogResults();
-		System.out.println(re.size());
-		for(Iterator<ReflogEntry> it=re.iterator();it.hasNext();){
-			ReflogEntry log=it.next();
-			System.out.print(log.getComment()+"--->");
-			System.out.print(log.getNewId()+"--->");
-			System.out.println(log.getOldId());
-			System.out.println("************************************************");
-		}
+		System.out.println(ro.toString());
 	}
 	
 	
@@ -97,15 +89,7 @@ public class ReflogOperationTest extends GitTestCase {
 		
 		ReflogOperation ro=new ReflogOperation(repository, "master");
 		ro.execute();
-		Collection<ReflogEntry> re=ro.getReflogResults();
-		System.out.println(re.size());
-		for(Iterator<ReflogEntry> it=re.iterator();it.hasNext();){
-			ReflogEntry log=it.next();
-			System.out.print(log.getComment()+"--->");
-			System.out.print(log.getNewId()+"--->");
-			System.out.println(log.getOldId());
-			System.out.println("************************************************");
-		}
+		System.out.println(ro.toString());
 	}
 	
 	private void setupRepository() throws Exception {

@@ -105,8 +105,8 @@ public class ResetOperationTest extends GitTestCase {
 		setupRepository();
 		System.out.println(initialCommit.getName());
 		String fileInIndexPath = fileInIndex.getAbsolutePath();
-		new ResetOperation(repository, initialCommit.getName(), ResetType.HARD)
-				.execute();
+		ResetOperation reset=new ResetOperation(repository, initialCommit.getName(), ResetType.HARD);
+		reset.execute();
 		// .project must disappear
 		assertFalse(projectFile.exists());
 		// check if HEAD points to initial commit now
@@ -118,6 +118,7 @@ public class ResetOperationTest extends GitTestCase {
 		// fileInIndex must no longer be in HEAD and in the index
 		assertFalse(repositoryUtil.inHead(fileInIndexPath));
 		assertFalse(repositoryUtil.inIndex(fileInIndexPath));
+		System.out.println(reset.toString());
 	}
 	
 	private void setupRepository() throws Exception {

@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class DeleteBranchOperationTest extends GitTestCase {
 		
 		//create branch of "test1"
 		
-		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", null, null);
+		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", "master");
 		branchCre.setCheckOutFlag(true);
 		branchCre.execute();
 		
@@ -114,6 +115,8 @@ public class DeleteBranchOperationTest extends GitTestCase {
 		
 		dbo.execute();
 		this.getListBranchs(repository);
+		System.out.println(dbo.toString());
+		
 	}
 	
 	@Test
@@ -136,20 +139,68 @@ public class DeleteBranchOperationTest extends GitTestCase {
 		
 		//create branch of "test1"
 		
-		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", null, null);
+		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", "master");
 		branchCre.setCheckOutFlag(true);
 		branchCre.execute();
 		
 		String br2=repository.getFullBranch();
 		System.out.println(br2);
 		this.getListBranchs(repository);
-		//create delete branch of master
 		
-		DeleteBranchOperation dbo=new DeleteBranchOperation(repository, repository.getAllRefs().get("refs/heads/test1"), false);
+		//create delete branch of test1
+		
+		DeleteBranchOperation dbo=new DeleteBranchOperation(repository, "test1", false);
 		
 		dbo.execute();
 		this.getListBranchs(repository);
-		System.out.println(dbo.getStatus());
+		System.out.println(dbo.toString());
+	}
+	
+	@Test
+	public void testDeleteBranchWithMulitBranchs() throws Exception {
+		String br1=repository.getFullBranch();
+		System.out.println(br1);
+		File file=new File(workdir,"file1.txt");
+		FileUtils.createNewFile(file);
+		
+		List<String> list=Arrays.asList(repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
+		
+		AddToIndexOperation addfile=new AddToIndexOperation(list, repository);
+		
+		addfile.execute();
+		
+		CommitOperation commitfile=new CommitOperation(repository, AUTHOR, COMMITTER, "first commit");
+		commitfile.execute();
+		
+		this.getListBranchs(repository);
+		
+		//create branch of "test1"
+		
+		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", "master");
+		branchCre.setCheckOutFlag(true);
+		branchCre.execute();
+		
+		//create branch of test2
+		branchCre=new CreateLocalBranchOperation(repository, "test2", "master");
+		branchCre.execute();
+		
+		String br2=repository.getFullBranch();
+		System.out.println(br2);
+		this.getListBranchs(repository);
+		
+		//create delete branch of master and test2
+		
+		List<String> branchs=new ArrayList<>();
+		
+		branchs.add("test2");
+		branchs.add("master");
+		
+		DeleteBranchOperation dbo=new DeleteBranchOperation(repository, branchs, false);
+		
+		dbo.execute();
+		this.getListBranchs(repository);
+		System.out.println(dbo.toString());
+		
 	}
 	
 	private void getListBranchs(Repository repository){

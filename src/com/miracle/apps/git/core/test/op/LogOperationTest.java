@@ -57,11 +57,7 @@ public class LogOperationTest extends GitTestCase {
 		setupRepository();
 		LogOperation cho=new LogOperation(repository);
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+	    System.out.println(cho.toString());
 	}
 	
 	@Test
@@ -70,11 +66,7 @@ public class LogOperationTest extends GitTestCase {
 		LogOperation cho=new LogOperation(repository);
 		cho.setMaxCount(2);
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+		System.out.println(cho.toString());
 	}
 	
 	@Test
@@ -82,11 +74,7 @@ public class LogOperationTest extends GitTestCase {
 		setupRepository();
 		LogOperation cho=new LogOperation(repository,initialCommit.getId());
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+		System.out.println(cho.toString());
 	}
 	
 	@Test
@@ -95,11 +83,7 @@ public class LogOperationTest extends GitTestCase {
 		LogOperation cho=new LogOperation(repository,initialCommit.getId());
 		cho.setMaxCount(2);
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+		System.out.println(cho.toString());
 	}
 	
 	
@@ -108,11 +92,7 @@ public class LogOperationTest extends GitTestCase {
 		setupRepository();
 		LogOperation cho=new LogOperation(repository,"dummy.txt");
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+		System.out.println(cho.toString());
 	}
 	
 	@Test
@@ -121,11 +101,7 @@ public class LogOperationTest extends GitTestCase {
 		LogOperation cho=new LogOperation(repository,"dummy.txt");
 		cho.setMaxCount(1);
 		cho.execute();
-		Iterator<RevCommit> it=cho.getCommitResults().iterator();
-		while(it.hasNext()){
-			RevCommit rc=it.next();
-			System.out.println(rc.getName()+"<---->"+rc.getShortMessage());
-		}
+		System.out.println(cho.toString());
 	}
 	
 	private void setupRepository() throws Exception {

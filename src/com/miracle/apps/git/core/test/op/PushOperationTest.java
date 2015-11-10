@@ -150,7 +150,7 @@ public class PushOperationTest extends GitTestCase {
 		PushOperation pop=createPushOperation();
 		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE, getStatus(pop.getOperationResult()));
-		
+		System.out.println(pop.toString());
 		ArrayList<String> files=new ArrayList<String>();
 		
 		File file=new File(workdir,"file2.txt");
@@ -167,7 +167,7 @@ public class PushOperationTest extends GitTestCase {
 		pop=createPushOperation();
 		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.OK, getStatus(pop.getOperationResult()));
-		
+		System.out.println(pop.toString());
 		try {
 			// assert that we cannot run this again
 			pop.execute();
@@ -179,7 +179,7 @@ public class PushOperationTest extends GitTestCase {
 		pop = createPushOperation();
 		pop.execute();
 		assertEquals(org.eclipse.jgit.transport.RemoteRefUpdate.Status.UP_TO_DATE, getStatus(pop.getOperationResult()));
-		
+		System.out.println(pop.toString());
 		File testFile = new File(workdir2,repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
 		assertFalse(testFile.exists());
 		testFile = new File(workdir, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));

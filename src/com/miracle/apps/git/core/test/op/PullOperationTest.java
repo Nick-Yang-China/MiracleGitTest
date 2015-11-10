@@ -124,7 +124,7 @@ public class PullOperationTest extends GitTestCase {
 		System.out.println(pr.getFetchedFrom());
 		
 		assertTrue(new File(workdir2,"file2.txt").exists());
-		
+		System.out.println(po.toString());
 	}
 	
 	@Test
@@ -148,7 +148,7 @@ public class PullOperationTest extends GitTestCase {
 		System.out.println(pr.getFetchedFrom());
 		
 		assertTrue(new File(workdir2,"file2.txt").exists());
-		
+		System.out.println(po.toString());
 	}
 	
 	@Test
@@ -175,7 +175,7 @@ public class PullOperationTest extends GitTestCase {
 		System.out.println(pr.getFetchedFrom());
 		
 		assertTrue(new File(workdir2,"file2.txt").exists());
-		
+		System.out.println(po.toString());
 	}
 	
 	@Test
@@ -200,6 +200,7 @@ public class PullOperationTest extends GitTestCase {
 		System.out.println(pr.getMergeResult().getMergeStatus().name());
 //		System.out.println(pr.getRebaseResult().toString());
 		assertTrue(new File(workdir2,"file2.txt").exists());
+		System.out.println(po.toString());
 	}
 	
 	@Test
@@ -215,11 +216,14 @@ public class PullOperationTest extends GitTestCase {
 		URIish uri=new URIish("file:///" + repository.getDirectory().toString());
 		
 		PullOperation po=new PullOperation(repository1, 0,"refs/heads/dev");
-		po.execute();
-		PullResult pr=po.getPullResult();
-		System.out.println(pr.getFetchedFrom());
+		try {
+			po.execute();
+			fail("expected exception here");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
-		assertTrue(new File(workdir2,"file2.txt").exists());
+		System.out.println(po.toString());
 	}
 	
 }

@@ -80,11 +80,6 @@ public class CreateLocalBranchOperationTest extends GitTestCase {
 		super.tearDown();
 	}
 	
-	/**
-	 * Push from repository1 "master" into "test" of repository2.
-	 *
-	 * @throws Exception
-	 */
 	@Test
 	public void testCreateBranch() throws Exception {
 		String br1=repository.getFullBranch();
@@ -102,12 +97,12 @@ public class CreateLocalBranchOperationTest extends GitTestCase {
 		
 		//create branch of "test1"
 		
-		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", repository.getRef("master"), null);
+		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", "refs/heads/master");
 		branchCre.setCheckOutFlag(true);
 		branchCre.execute();
 		
 		String br2=repository.getFullBranch();
-		
+		System.out.println(br2);
 		assertNotEquals("expected result", br1, br2);
 	}
 	
@@ -139,16 +134,15 @@ public class CreateLocalBranchOperationTest extends GitTestCase {
 		Map<String,Ref> refs=repository.getAllRefs();
 		
 		for(String key:refs.keySet()){
-			System.out.println("Key:"+key+"-- values"+refs.get(key).getName());
+			System.out.println("Key:"+key+"-- values:"+refs.get(key).getName());
 		}
 		
-		System.out.println(repository.getAllRefs().get("refs/heads/master").getName());
 		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1", repository.getAllRefs().get("refs/heads/master"), null);
 		branchCre.setCheckOutFlag(true);
 		branchCre.execute();
 		
 		String br2=repository.getFullBranch();
-		
+		System.out.println(br2);
 		assertNotEquals("expected result", br1, br2);
 	}
 	
@@ -207,22 +201,6 @@ public class CreateLocalBranchOperationTest extends GitTestCase {
 		
 		CommitOperation commitfile=new CommitOperation(repository, AUTHOR, COMMITTER, "first commit");
 		commitfile.execute();
-//		RevCommit rev=commitfile.getCommit();
-//		
-//		file=new File(workdir,"file2.txt");
-//		FileUtils.createNewFile(file);
-//		
-//		list=Arrays.asList(repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
-//		
-//		addfile=new AddToIndexOperation(list, repository);
-//		
-//		addfile.execute();
-//		
-//		commitfile=new CommitOperation(repository, AUTHOR, COMMITTER, "second commit");
-//		commitfile.execute();
-		
-//		create branch of "test1"
-//		System.out.println(rev.getId().getName());
 		CreateLocalBranchOperation branchCre=new CreateLocalBranchOperation(repository, "test1",repository.getAllRefs().get("refs/heads/master"),UpstreamConfig.MERGE);
 		branchCre.setCheckOutFlag(true);
 		branchCre.execute();

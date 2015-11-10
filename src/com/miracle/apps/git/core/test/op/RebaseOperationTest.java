@@ -67,6 +67,7 @@ import com.miracle.apps.git.test.core.GitTestCase;
 import com.miracle.apps.git.core.RepositoryUtil;
 import com.miracle.apps.git.core.errors.CoreException;
 
+@SuppressWarnings("unused")
 public class RebaseOperationTest extends GitTestCase {
 	
 	private static final String TOPIC = Constants.R_HEADS + "topic";
@@ -127,7 +128,7 @@ public class RebaseOperationTest extends GitTestCase {
 		FileUtils.createNewFile(file2);
 		repositoryUtil.appendFileContent(file2, "Hello, world");
 		repositoryUtil.track(file2);
-		// first commit in master: add theFile.txt
+		// second commit in topic: add theFile.txt
 		RevCommit topicCommit=repositoryUtil.commit("Adding theSecondFile.txt");
 
 		// parent of topic commit should be first master commit before rebase
@@ -135,12 +136,12 @@ public class RebaseOperationTest extends GitTestCase {
 		
 		// rebase topic onto master
 		RebaseOperation op = new RebaseOperation(
-				repository, repository.getRef(MASTER));
+				repository, "refs/heads/master");
 		op.execute();
 
 		RebaseResult res = op.getResult();
 		assertEquals(RebaseResult.Status.UP_TO_DATE, res.getStatus());
-
+		System.out.println(op.toString());
 		try (RevWalk rw = new RevWalk(repository)) {
 			RevCommit newTopic=rw.parseCommit(repository.resolve(TOPIC));
 			assertEquals(topicCommit, newTopic);
@@ -188,7 +189,7 @@ public class RebaseOperationTest extends GitTestCase {
 		RebaseResult res=op.getResult();
 		
 		assertEquals(RebaseResult.Status.OK, res.getStatus());
-		
+		System.out.println(op.toString());
 		try(RevWalk rw=new RevWalk(repository)){
 			RevCommit newTopic=rw.parseCommit(repository.resolve(TOPIC));
 			
@@ -230,13 +231,13 @@ public class RebaseOperationTest extends GitTestCase {
 		RebaseResult res=op.getResult();
 		
 		assertEquals(RebaseResult.Status.STOPPED, res.getStatus());
-		
+		System.out.println(op.toString());
 		//let's try to abort this here
 		RebaseOperation abort = new RebaseOperation(repository, Operation.ABORT);
 		abort.execute();
 		RebaseResult abortResult=abort.getResult();
 		assertEquals(RebaseResult.Status.ABORTED, abortResult.getStatus());
-		
+		System.out.println(abort.toString());
 		assertEquals(topicCommit, repository.resolve(Constants.HEAD));
 		
 	}
@@ -275,7 +276,7 @@ public class RebaseOperationTest extends GitTestCase {
 		RebaseResult res=op.getResult();
 		
 		assertEquals(RebaseResult.Status.STOPPED, res.getStatus());
-		
+		System.out.println(op.toString());
 		try {
 			// let's try to start again, we should get a wrapped
 			// WrongRepositoryStateException

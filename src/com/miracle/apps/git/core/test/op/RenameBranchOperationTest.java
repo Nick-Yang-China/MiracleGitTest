@@ -108,6 +108,7 @@ public class RenameBranchOperationTest extends GitTestCase {
 		rbo.execute();
 		
 		assertEquals("refs/heads/test2", repository.getAllRefs().get("refs/heads/test2").getName());
+		System.out.println(rbo.toString());
 	}
 	
 	@Test
@@ -135,6 +136,7 @@ public class RenameBranchOperationTest extends GitTestCase {
 		RenameBranchOperation rbo=new RenameBranchOperation(repository, repository.getRef("test1"), "test2");
 		rbo.execute();
 		assertEquals("refs/heads/test2", repository.getAllRefs().get("refs/heads/test2").getName());
+		System.out.println(rbo.toString());
 	}
 	
 }

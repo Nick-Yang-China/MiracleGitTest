@@ -105,12 +105,12 @@ public class BranchOperationTest extends GitTestCase {
 		branchCre.execute();
 		
 		//checkout branch of test1
-		BranchOperation bo=new BranchOperation(repository, TEST);
+		BranchOperation bo=new BranchOperation(repository, "test1");
 		bo.execute();
 		String br2=repository.getFullBranch();
 		System.out.println(br2);
 		assertTrue(repository.getFullBranch().equals(TEST));
-		
+		System.out.println(bo.toString());
 	}
 	
 }

@@ -112,11 +112,44 @@ public class DeleteTagOperationTest extends GitTestCase {
 		
 		//delete the tag of TheNewTag
 		
-		DeleteTagOperation dto=new DeleteTagOperation(repository, newTag.getTag());
+		DeleteTagOperation dto=new DeleteTagOperation(repository, "TheNewTag");
 		
 		dto.execute();
 		
 		assertTrue("Tags should be empty", repository.getTags().isEmpty());
+		System.out.println(dto.toString());
+	}
+	
+	@Test
+	public void testDeleteTagOperationWithMultiTags() throws Exception {
+		assertTrue("Tags should be empty", repository.getTags().isEmpty());
+		
+		TagBuilder newTag=new TagBuilder();
+		newTag.setTag("TheNewTag");
+		newTag.setMessage("Well,I'm the tag");
+		newTag.setTagger(RawParseUtils.parsePersonIdent(AUTHOR));
+		newTag.setObjectId(repository.resolve("refs/heads/master"), Constants.OBJ_COMMIT);
+		TagOperation top=new TagOperation(repository, newTag, false);
+		top.execute();
+		
+		newTag=new TagBuilder();
+		newTag.setTag("ThesecondTag");
+		newTag.setMessage("Well,I'm the tag two");
+		newTag.setTagger(RawParseUtils.parsePersonIdent(AUTHOR));
+		newTag.setObjectId(repository.resolve("refs/heads/master"), Constants.OBJ_COMMIT);
+		top=new TagOperation(repository, newTag, false);
+		
+		top.execute();
+		assertFalse("Tags should not be empty", repository.getTags().isEmpty());
+		
+		//delete the tag of TheNewTag and ThesecondTag
+		
+		DeleteTagOperation dto=new DeleteTagOperation(repository, "TheNewTag","ThesecondTag");
+		
+		dto.execute();
+		
+		assertTrue("Tags should be empty", repository.getTags().isEmpty());
+		System.out.println(dto.toString());
 	}
 	
 }

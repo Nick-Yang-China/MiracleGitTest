@@ -54,7 +54,7 @@ public class CommitOperationTest extends GitTestCase {
 	@After
 	public void tearDown() throws Exception {
 		repositoryUtil.dispose();
-		repositoryUtil.removeLocalRepository(repository);
+//		repositoryUtil.removeLocalRepository(repository);
 		super.tearDown();
 	}
 
@@ -217,13 +217,14 @@ public class CommitOperationTest extends GitTestCase {
 		
 		testStatus();
 		//方法一
-		commitOperation = new CommitOperation(repository,Arrays.asList("d.txt"), null, AUTHOR, COMMITTER, "third commit c.txt");
+		commitOperation = new CommitOperation(repository,Arrays.asList("d.txt"), null, AUTHOR, COMMITTER, "fourth commit c.txt");
 		commitOperation.execute();
 		//方法二
 //		commitOperation = new CommitOperation(repository, AUTHOR, COMMITTER, "Deleted the file of d.txt");
 //		commitOperation.setCommitAll(true);
 //		commitOperation.execute();
 		testCommitLog();
+		testStatus();
 	}
 	
 	private void testCommitLog() throws Exception {

@@ -121,7 +121,7 @@ public class ListRemoteOperationTest extends GitTestCase {
 		InteratorRemoteRefs(lrop.getRemoteRefs());
 		assertEquals(4, lrop.getRemoteRefs().size());
 		assertNotNull(lrop.getRemoteRef("refs/heads/test"));
-
+		System.out.println(lrop.toString());
 		uri = new URIish("file:///"
 				+ repository.getDirectory().getPath());
 		lrop = new ListRemoteOperation(repository1, uri, 0);
@@ -129,6 +129,7 @@ public class ListRemoteOperationTest extends GitTestCase {
 		InteratorRemoteRefs(lrop.getRemoteRefs());
 		assertEquals(2, lrop.getRemoteRefs().size());
 		assertNotNull(lrop.getRemoteRef("refs/heads/master"));
+		System.out.println(lrop.toString());
 	}
 	
 	/**
