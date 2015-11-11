@@ -62,7 +62,7 @@ public class DiffOperationTest extends GitTestCase {
 		//modify the file content
 		repositoryUtil.appendFileContent(file, "modify file");
 		
-		DiffOperation dop=new DiffOperation(repository,"dummy.txt");
+		DiffOperation dop=new DiffOperation(repository,"dummy.txt",null,null);
 		dop.execute();
 		
 		System.out.println(dop.toString());
@@ -78,7 +78,7 @@ public class DiffOperationTest extends GitTestCase {
 		FileUtils.createNewFile(folder);
 		repositoryUtil.track(folder);
 		System.out.println(repositoryUtil.getRepoRelativePath(folder.getAbsolutePath()));
-		DiffOperation dop=new DiffOperation(repository,repositoryUtil.getRepoRelativePath(folder.getAbsolutePath()));
+		DiffOperation dop=new DiffOperation(repository,repositoryUtil.getRepoRelativePath(folder.getAbsolutePath()),null,null);
 		dop.execute();
 		
 		System.out.println(dop.toString());
@@ -92,7 +92,21 @@ public class DiffOperationTest extends GitTestCase {
 //		//modify the file content
 //		repositoryUtil.appendFileContent(file, "modify file");
 		
-		DiffOperation dop=new DiffOperation(repository,"dummy.txt");
+		DiffOperation dop=new DiffOperation(repository,"dummy.txt",null,null);
+		dop.execute();
+		System.out.println(dop.toString());
+		
+	}
+	
+	@Test
+	public void testDiffWithTwoCommitId() throws Exception {
+		setupRepository();
+		
+		repositoryUtil.appendFileContent(file, "test c");
+		repositoryUtil.track(file);
+		RevCommit four=repositoryUtil.commit("fourth commit");
+		
+		DiffOperation dop=new DiffOperation(repository,"dummy.txt",four.getName(),initialCommit.getName()); 
 		dop.execute();
 		System.out.println(dop.toString());
 		
@@ -110,13 +124,13 @@ public class DiffOperationTest extends GitTestCase {
 		
 		repositoryUtil.appendFileContent(file, "test a");
 		repositoryUtil.track(file);
-		repositoryUtil.commit("second commit");
+		initialCommit=repositoryUtil.commit("second commit");
 		
 		//update the file content and commit again
 		
 		repositoryUtil.appendFileContent(file, "test b");
 		repositoryUtil.track(file);
-		initialCommit=repositoryUtil.commit("third commit");
+		repositoryUtil.commit("third commit");
 	}
 
 }

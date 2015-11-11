@@ -91,24 +91,24 @@ public class CloneOperationTest extends GitTestCase {
 		if(repository!=null)
 			repository.close();
 		
-//		if (workdir.exists())
-//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
-//		if (workdir2.exists())
-//			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir.exists())
+			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir2.exists())
+			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
 	private void cloneAndAssert(String refName,boolean BranchFlag) throws Exception {		
 		String uri = "file:///"+ repository.getDirectory().toString();
-//		String uri = "ssh://root@192.168.1.111:22/project/gitserver/831server/831dev.git";
+//		String uri = "ssh://root@192.168.1.111:22/project/gitserver/831server/test.git";
 		CloneOperation clop;
 		if(BranchFlag)
-			 clop = new CloneOperation(uri, false, Arrays.asList("refs/heads/master"), workdir2, null, "origin", 0, null, null);
+			 clop = new CloneOperation(uri, false, Arrays.asList("refs/heads/master"), workdir2, refName, "origin", 0, "root", "111111");
 		else
 			 clop = new CloneOperation(uri, true, null, workdir2, refName, "origin", 0, null, null);
 		
 		clop.execute();
-
+		System.out.println(clop.getCloneStatus());
 		Repository clonedRepo = FileRepositoryBuilder.create(new File(workdir2,
 				Constants.DOT_GIT));
 		System.out.println(clonedRepo.getWorkTree());
