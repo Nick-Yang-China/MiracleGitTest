@@ -1,4 +1,4 @@
-package com.miracle.apps.git.test.core;
+package com.miracle.apps.git.test.storage;
 
 import static org.junit.Assert.*;
 
@@ -40,8 +40,11 @@ import org.junit.Test;
 import com.miracle.apps.git.core.RepositoryUtil;
 import com.miracle.apps.git.core.op.AddToIndexOperation;
 import com.miracle.apps.git.core.op.CommitOperation;
+import com.miracle.apps.git.core.storage.CommitBlobStorage;
+import com.miracle.apps.git.core.storage.CommitFileRevision;
+import com.miracle.apps.git.test.core.GitTestCase;
 
-public class RepositoryUtilTest extends GitTestCase {
+public class CommitFileRevisionTest extends GitTestCase {
 	RepositoryUtil repositoryUtil;
 	
 	Repository repository;
@@ -59,7 +62,7 @@ public class RepositoryUtilTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		workdir= new File("D://Repository2");
+		workdir= new File("D://Repository1");
 		
 		if(workdir.exists()){
 			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
@@ -69,9 +72,6 @@ public class RepositoryUtilTest extends GitTestCase {
 		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
 		
 		repository=repositoryUtil.getRepository();
-//		repositoryUtil=new RepositoryUtil("D://repo");
-//		
-//		repository=repositoryUtil.getRepository();
 	}
 
 	@After
@@ -80,66 +80,6 @@ public class RepositoryUtilTest extends GitTestCase {
 		repositoryUtil.removeLocalRepository(repository);
 	}
 
-	@Test
-	public void getRepoRelativePathwithMulitPaths() {
-		ArrayList<String> paths=new ArrayList<String>();
-		
-		
-		File fil1=new File("D:/repo/sub/file1.txt");
-		
-		File fil2=new File("D:\\repo\\file2.txt");
-		
-		paths.add(fil1.getAbsolutePath());
-		paths.add(fil2.getAbsolutePath());
-		
-		paths=(ArrayList<String>) repositoryUtil.getRepoRelativePathwithMulitPaths(paths);
-		
-		for(String path: paths){
-			System.out.println(path);
-		}
-		
-	}
-	
-	@Test 
-	public void testMethods() throws IOException, NoFilepatternException, GitAPIException{
-		//1.getWorkDirPrefix
-		System.out.println(repositoryUtil.getWorkDirPrefix());
-		//2.inHead
-		File file=new File(repositoryUtil.getWorkDirPrefix(),"file1.txt");
-		FileUtils.createNewFile(file);
-		repositoryUtil.appendFileContent(file, "Hello World");
-		Collection<String>  rsrcs=repositoryUtil.getRepoRelativePathwithMulitPaths(file.getAbsolutePath());
-		new AddToIndexOperation(rsrcs, repository).execute();
-		new CommitOperation(repository, AUTHOR, COMMITTER, "Initial Commit").execute();
-		
-		System.out.println(repositoryUtil.inHead("file1.txt"));
-		
-		//3.inIndex
-		
-		System.out.println(repositoryUtil.inIndex(file.getAbsolutePath()));
-		
-	    //4.lastModifiedInIndex
-		System.out.println(repositoryUtil.lastModifiedInIndex(file.getAbsolutePath()));
-		
-		//5.getDirCacheEntryLength
-		System.out.println(repositoryUtil.getDirCacheEntryLength(file.getAbsolutePath()));
-		
-		//6.isDetachedHead
-		System.out.println(repository.getFullBranch());
-		System.out.println(RepositoryUtil.isDetachedHead(repository));
-		
-		//7.parseHeadCommit
-		RevCommit commit=RepositoryUtil.parseHeadCommit(repository);
-		System.out.println(commit.getName());
-		
-		//8.getShortBranch
-		System.out.println(repositoryUtil.getShortBranch());
-		
-		//9.mapCommitToRef
-		
-		System.out.println(repositoryUtil.mapCommitToRef(repository, commit.getName(), false));
-	}
-	
 	@Test
 	public void testGetContentSources() throws Exception{
 		// create first commit containing a dummy file
@@ -167,12 +107,13 @@ public class RepositoryUtilTest extends GitTestCase {
 		repositoryUtil.track(second);
 		RevCommit secondCommit=repositoryUtil.commit("second commit");
 		
-		TreeWalk tw=TreeWalk.forPath(repository, "first.txt",firstCommit.getTree());
+		repositoryUtil.mapCommitIdToRevCommit(firstCommit.getName());
 		
-		ObjectId blobId=tw.getObjectId(0);
+		CommitFileRevision cfr=new CommitFileRevision(repository, repositoryUtil.mapCommitIdToRevCommit(firstCommit.getName()), "first.txt");
 		
-		final InputStream objectInputStream = repository.open(blobId,
-				Constants.OBJ_BLOB).openStream();
+		CommitBlobStorage cbs=cfr.getStorage();
+		
+		final InputStream objectInputStream = cbs.getContents();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(objectInputStream)); 
 		String line;
 		while((line=reader.readLine())!=null){

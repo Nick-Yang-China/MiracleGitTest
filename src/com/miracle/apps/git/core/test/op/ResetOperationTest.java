@@ -76,7 +76,7 @@ public class ResetOperationTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		workdir= new File("D://Repository1");
+		workdir= new File("D://Repository2");
 		
 		if(workdir.exists()){
 			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
@@ -95,8 +95,8 @@ public class ResetOperationTest extends GitTestCase {
 		
 		repositoryUtil.dispose();
 		
-		if (workdir.exists())
-			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+//		if (workdir.exists())
+//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
@@ -180,5 +180,39 @@ public class ResetOperationTest extends GitTestCase {
 		assertFalse(repositoryUtil.inHead(fileInIndexPath));
 		// fileInIndex must not in the index
 		assertFalse(repositoryUtil.inIndex(fileInIndexPath));
+	}
+	
+	@Test
+	public void testResetWithFilePath() throws Exception {
+		
+		// create first commit containing a dummy file
+		File file=new File(workdir, "dummy.txt");
+		FileUtils.createNewFile(file);
+		repositoryUtil.appendFileContent(file, "dummy");
+		repositoryUtil.track(file);
+		initialCommit=repositoryUtil.commit("dummy commit");
+		
+		//create second commit modify file dummy.txt and create a new file first.txt
+		repositoryUtil.appendFileContent(file, "\nmodify");
+		repositoryUtil.track(file);
+		File first=new File(workdir, "first.txt");
+		FileUtils.createNewFile(first);
+		repositoryUtil.appendFileContent(first, "first");
+		repositoryUtil.track(first);
+		RevCommit firstCommit=repositoryUtil.commit("first commit");
+		
+		//create third commit modify file dummy.txt and create a new file second.txt
+		repositoryUtil.appendFileContent(file, "\nagain");
+		repositoryUtil.track(file);
+		File second=new File(workdir, "second.txt");
+		FileUtils.createNewFile(second);
+		repositoryUtil.appendFileContent(second, "second");
+		repositoryUtil.track(second);
+		RevCommit secondCommit=repositoryUtil.commit("second commit");
+		
+//		String fileInIndexPath = fileInIndex.getAbsolutePath();
+		new ResetOperation(repository, firstCommit.getName(),null).setPath("dummy.txt")
+				.execute();
+		
 	}
 }
