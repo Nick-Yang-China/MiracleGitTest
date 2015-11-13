@@ -176,9 +176,10 @@ public class CloneOperationTest extends GitTestCase {
 	
 	@Test
 	public void testWithWrongInfo()throws Exception{
-		CloneOperation co=new CloneOperation("test", true, null, new File("D:\test"), "master", Constants.DEFAULT_REMOTE_NAME, 0, "root", "123123");
+		CloneOperation co=new CloneOperation("D:/EgitShow/.git", true, null, new File("D:/test1"), "master", Constants.DEFAULT_REMOTE_NAME, 0, "root", "123123");
 	    co.execute();
 		System.out.println(co.getCloneStatus());
+		System.out.println(co.getFlag());
 	}
 	
 }
