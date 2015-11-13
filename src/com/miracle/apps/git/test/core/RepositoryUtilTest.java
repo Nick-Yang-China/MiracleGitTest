@@ -137,7 +137,7 @@ public class RepositoryUtilTest extends GitTestCase {
 		
 		//9.mapCommitToRef
 		
-		System.out.println(repositoryUtil.mapCommitToRef(repository, commit.getName(), false));
+		System.out.println(repositoryUtil.mapCommitToRef(commit.getName(), false));
 	}
 	
 	@Test
