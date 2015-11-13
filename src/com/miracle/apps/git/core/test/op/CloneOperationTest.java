@@ -174,4 +174,11 @@ public class CloneOperationTest extends GitTestCase {
 		
 	}
 	
+	@Test
+	public void testWithWrongInfo()throws Exception{
+		CloneOperation co=new CloneOperation("test", true, null, new File("D:\test"), "master", Constants.DEFAULT_REMOTE_NAME, 0, "root", "123123");
+	    co.execute();
+		System.out.println(co.getCloneStatus());
+	}
+	
 }
