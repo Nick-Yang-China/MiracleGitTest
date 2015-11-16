@@ -26,6 +26,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.CredentialsProviderUserInfo;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
@@ -51,9 +52,12 @@ public class PushOperationTest extends GitTestCase {
 	
 	Repository repository1;
 	Repository repository2;
+	Repository repository3;
+	
 	
 	File workdir;
 	File workdir2;
+	File workdir3;
 	
 	RepositoryUtil repositoryUtil;
 
@@ -61,6 +65,8 @@ public class PushOperationTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		
+		//create Main Git Repository
 		workdir= new File("D://Repository1");
 		
 		if(workdir.exists()){
@@ -68,24 +74,26 @@ public class PushOperationTest extends GitTestCase {
 		}
 		FileUtils.mkdir(workdir,true);
 		
+		//init RepositoryUtil class
+		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
+		
+		repository1=repositoryUtil.getRepository();
+		
+		//create file, add and commit
+		File file=new File(workdir,"file.txt");
+		FileUtils.createNewFile(file);
+		repositoryUtil.appendFileContent(file, "Contect file");
+		Git git=new Git(repository1);
+		git.add().addFilepattern("file.txt").call();
+		git.commit().setMessage("First Commit").call();
+		
+		//clone Git Repository 2
 		workdir2= new File("D:/Repository2");
 		
 		if(workdir2.exists()){
 			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
 		}
 		FileUtils.mkdir(workdir2,true);
-		
-		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
-		
-		repository1=repositoryUtil.getRepository();
-		
-		File file=new File(workdir,"file1.txt");
-		FileUtils.createNewFile(file);
-		repositoryUtil.appendFileContent(file, "Contect file1");
-		Git git=new Git(repository1);
-		
-		git.add().addFilepattern("file1.txt").call();
-		git.commit().setMessage("First Commit").call();
 		
 		URIish uri=new URIish("file:///" + repository1.getDirectory().toString());
 		
@@ -94,9 +102,25 @@ public class PushOperationTest extends GitTestCase {
 		
 		repository2=new FileRepository(new File(workdir2,Constants.DOT_GIT));
 		
-		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
-		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
-		createBranch.update();
+		//clone Git Repository 3
+		workdir3= new File("D:/Repository3");
+		
+		if(workdir3.exists()){
+			FileUtils.delete(workdir3, FileUtils.RECURSIVE | FileUtils.RETRY);
+		}
+		FileUtils.mkdir(workdir3,true);
+		
+		uri=new URIish("file:///" + repository1.getDirectory().toString());
+		
+		clop=new CloneOperation(uri.toString(), true, null, workdir3, "refs/heads/master", "origin", 0,null,null);
+		clop.execute();
+		
+		repository3=new FileRepository(new File(workdir3,Constants.DOT_GIT));
+		
+		
+//		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
+//		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
+//		createBranch.update();
 	}
 
 	@Override
@@ -106,11 +130,15 @@ public class PushOperationTest extends GitTestCase {
 			repository1.close();
 		if(repository2!=null)
 			repository2.close();
+		if(repository3!=null)
+			repository3.close();
 		
 		if (workdir.exists())
 			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
 		if (workdir2.exists())
 			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir3.exists())
+			FileUtils.delete(workdir3, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
@@ -298,4 +326,39 @@ public class PushOperationTest extends GitTestCase {
 		File testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
 		assertTrue(testFile.exists());
 	}
+	
+	@Test
+	public void testConflictsFromOtherPush() throws Exception{
+		//now Repository 2 update the file and push
+		File file1=new File(workdir2,"file.txt");
+		repositoryUtil.appendFileContent(file1, "-->from Repository 2");
+		Git git=new Git(repository2);
+		git.add().addFilepattern("file.txt").call();
+		git.commit().setMessage("Second Commit").call();
+		
+		URIish remote=new URIish("file:///" + repository1.getDirectory().toString());
+		//now push the Repository 2 into the Repository 1
+		RefSpec rs=new RefSpec();
+		rs=rs.setSourceDestination("refs/heads/master", "refs/heads/master");
+		PushOperation po=new PushOperation(repository2, remote.toString(), Arrays.asList(rs), false, 0);
+		po.execute();
+		System.out.println(po.toString());
+		
+		//Now Repository 3 update the file and push
+		File file2=new File(workdir3,"file.txt");
+		repositoryUtil.appendFileContent(file2, "-->from Repository 3");
+		git=new Git(repository3);
+		git.add().addFilepattern("file.txt").call();
+		git.commit().setMessage("Third Commit").call();
+		
+		//now push the Repository 3 into the Repository 1
+		rs=new RefSpec();
+		rs=rs.setSourceDestination("refs/heads/master", "refs/heads/master");
+//		rs=rs.setForceUpdate(true);
+		po=new PushOperation(repository3, remote.toString(), Arrays.asList(rs), false, 0);
+		po.execute();
+		System.out.println(po.toString());
+		
+	}
 }
+
