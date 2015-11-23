@@ -51,13 +51,13 @@ public class RevertOperationTest extends GitTestCase {
 		
 		repositoryUtil.dispose();
 		
-//		if (workdir.exists())
-//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir.exists())
+			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
 	@Test
-	public void testHardReset() throws Exception {
+	public void testRevert() throws Exception {
 		setupRepository();
 		
 		//add another file of file.txt
@@ -76,7 +76,7 @@ public class RevertOperationTest extends GitTestCase {
 	}
 	
 	@Test
-	public void testHardResetWithStragey() throws Exception {
+	public void testRevertWithStragey() throws Exception {
 		setupRepository();
 		File file=new File(workdir, "file.txt");
 		FileUtils.createNewFile(file);
@@ -93,6 +93,43 @@ public class RevertOperationTest extends GitTestCase {
 //		
 //		assertEquals("test a", getFileContent(new File(workdir, "dummy.txt")));
 		System.out.println(rco.toString());
+	}
+	
+	
+	@Test
+	public void testRevertWithName() throws Exception {
+		// create first commit containing a dummy file
+		File file=new File(workdir, "dummy.txt");
+		FileUtils.createNewFile(file);
+		repositoryUtil.appendFileContent(file, "dummy");
+		repositoryUtil.track(file);
+		initialCommit=repositoryUtil.commit("dummy commit");
+		
+		//create second commit modify file dummy.txt and create a new file first.txt
+		repositoryUtil.appendFileContent(file, "\nmodify");
+		repositoryUtil.track(file);
+		File first=new File(workdir, "first.txt");
+		FileUtils.createNewFile(first);
+		repositoryUtil.appendFileContent(first, "first");
+		repositoryUtil.track(first);
+		RevCommit firstCommit=repositoryUtil.commit("first commit");
+		
+		//create third commit modify file dummy.txt and create a new file second.txt
+		repositoryUtil.appendFileContent(file, "\nagain");
+		repositoryUtil.track(file);
+		File second=new File(workdir, "second.txt");
+		FileUtils.createNewFile(second);
+		repositoryUtil.appendFileContent(second, "second");
+		repositoryUtil.track(second);
+		RevCommit secondCommit=repositoryUtil.commit("second commit");
+		
+		//Revert Operation
+		
+		RevertCommitOperation rco=new RevertCommitOperation(repository, "RLSLSLLSLSL", secondCommit.getId());
+		rco.setStrategyName("OURS");
+		rco.execute();
+		System.out.println(rco.toString());
+		
 	}
 	
 	private void setupRepository() throws Exception {

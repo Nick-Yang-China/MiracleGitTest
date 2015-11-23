@@ -95,8 +95,8 @@ public class ResetOperationTest extends GitTestCase {
 		
 		repositoryUtil.dispose();
 		
-//		if (workdir.exists())
-//			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+		if (workdir.exists())
+			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
 		super.tearDown();
 	}
 	
@@ -210,9 +210,11 @@ public class ResetOperationTest extends GitTestCase {
 		repositoryUtil.track(second);
 		RevCommit secondCommit=repositoryUtil.commit("second commit");
 		
-//		String fileInIndexPath = fileInIndex.getAbsolutePath();
-		new ResetOperation(repository, firstCommit.getName(),null).setPath("dummy.txt")
-				.execute();
+		String fileInIndexPath = fileInIndex.getAbsolutePath();
+		ResetOperation ro=new ResetOperation(repository, firstCommit.getName(),null).setPath("dummy.txt");
+		ro.execute();
+		
+		System.out.println(ro.toString());
 		
 	}
 }

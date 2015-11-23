@@ -203,6 +203,30 @@ public class DeleteBranchOperationTest extends GitTestCase {
 		
 	}
 	
+	@Test
+	public void testDeleteBranchWithOnlyOne() throws Exception{
+		String br1=repository.getFullBranch();
+		System.out.println(br1);
+		File file=new File(workdir,"file1.txt");
+		FileUtils.createNewFile(file);
+		
+		List<String> list=Arrays.asList(repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
+		
+		AddToIndexOperation addfile=new AddToIndexOperation(list, repository);
+		
+		addfile.execute();
+		
+		CommitOperation commitfile=new CommitOperation(repository, AUTHOR, COMMITTER, "first commit");
+		commitfile.execute();
+		
+		this.getListBranchs(repository);
+		
+		DeleteBranchOperation dbo=new DeleteBranchOperation(repository, repository.getAllRefs().get("refs/heads/master"), false);
+		
+		dbo.execute();
+		System.out.println(dbo.toString());
+	}
+	
 	private void getListBranchs(Repository repository){
 		Map<String,Ref> refs=repository.getAllRefs();
 		
