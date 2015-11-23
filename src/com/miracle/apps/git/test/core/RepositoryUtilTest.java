@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
@@ -180,6 +182,14 @@ public class RepositoryUtilTest extends GitTestCase {
 		}
 	}
 	
+	@Test
+	public void testSplitFile() throws Exception{
+		File file =new File("D:\\zdt-public-service.json");
+		Map<String,String> map=repositoryUtil.getConflictFileContentWithSplit(file);
+		for(Entry<String, String> ent:map.entrySet()){
+			System.out.println(ent.getKey()+"----->"+ent.getValue());
+		}
+	}
 
 	
 }

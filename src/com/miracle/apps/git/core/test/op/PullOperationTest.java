@@ -2,8 +2,15 @@ package com.miracle.apps.git.core.test.op;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -48,7 +55,10 @@ public class PullOperationTest extends GitTestCase {
 	File workdir2;
 	
 	RepositoryUtil repositoryUtil;
-
+	RepositoryUtil repositoryUtil1;
+	
+	File file;
+	
 	@Override
 	@Before
 	public void setUp() throws Exception {
@@ -71,7 +81,7 @@ public class PullOperationTest extends GitTestCase {
 		
 		repository=repositoryUtil.getRepository();
 		
-		File file=new File(workdir,"file1.txt");
+		file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);
 		repositoryUtil.appendFileContent(file, "Hello World");
 		repositoryUtil.track(file);
@@ -86,7 +96,9 @@ public class PullOperationTest extends GitTestCase {
 		
 		clop.execute();
 		
-		repository1=new RepositoryUtil(new File(workdir2,Constants.DOT_GIT)).getRepository();
+		repositoryUtil1=new RepositoryUtil(new File(workdir2,Constants.DOT_GIT));
+		
+		repository1=repositoryUtil1.getRepository();
 		
 	}
 
@@ -192,7 +204,7 @@ public class PullOperationTest extends GitTestCase {
 		RevCommit secondcommit=repositoryUtil.commit("second Commit");		
 		
 		//the repository1 pull from repository
-		PullOperation po=new PullOperation(repository1, 0,null);
+		PullOperation po=new PullOperation(repository1, 0,"master");
 		po.execute();
 		PullResult pr=po.getPullResult();
 		System.out.println(pr.toString());
@@ -224,6 +236,30 @@ public class PullOperationTest extends GitTestCase {
 		}
 		
 		System.out.println(po.toString());
+	}
+	
+	@Test
+	public void testPullOperationWithFileConflictContent()throws Exception{
+		//modify file1.txt in repository1
+		file=new File(workdir,"file1.txt");
+		repositoryUtil.appendFileContent(file, "updating from 1");
+		repositoryUtil.track(file);
+		RevCommit secondcommit=repositoryUtil.commit("second Commit");
+		 
+		//modify file1.txt in repository2
+		
+		file=new File(workdir2,"file1.txt");
+		repositoryUtil1.appendFileContent(file, "adding from 2");
+		repositoryUtil1.track(file);
+		RevCommit thirdcommit=repositoryUtil1.commit("third Commit");
+		
+//		the repository1 pull from repository
+//		URIish uri=new URIish("file:///" + repository.getDirectory().toString());
+		
+		PullOperation po=new PullOperation(repository1, 0,"master");
+		po.execute();
+		System.out.println(po.toString());
+		
 	}
 	
 }
