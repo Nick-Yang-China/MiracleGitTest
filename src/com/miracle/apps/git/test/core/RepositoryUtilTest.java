@@ -191,5 +191,17 @@ public class RepositoryUtilTest extends GitTestCase {
 		}
 	}
 
+	@Test
+	public void testMergeConflictFile() throws Exception{
+		File file =new File("D:\\zdt-public-service.json");
+		Map<String,String> map=repositoryUtil.getConflictFileContentWithSplit(file);
+		for(Entry<String, String> ent:map.entrySet()){
+			System.out.println(ent.getKey()+"----->"+ent.getValue());
+		}
+		
+		file=new File("D:\\zdt-public-service18.json");
+		repositoryUtil.revertMapContentToConflictFile(file, map);
+		
+	}
 	
 }
