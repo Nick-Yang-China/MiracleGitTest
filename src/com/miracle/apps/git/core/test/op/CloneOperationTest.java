@@ -182,4 +182,40 @@ public class CloneOperationTest extends GitTestCase {
 		System.out.println(co.getFlag());
 	}
 	
+	
+	@Test
+	public void testCloneSSH2RSAKey()throws Exception{
+		String uri = "ssh://Administrator@192.168.1.109/icw/home/administrator/831test.git";
+		
+		CloneOperation	clop = new CloneOperation(uri, false, Arrays.asList("refs/heads/master"), workdir2, "master", "origin", 0, "Administrator", "1");
+		clop.execute();
+		System.out.println(clop.getCloneStatus());
+		Repository clonedRepo = FileRepositoryBuilder.create(new File(workdir2,
+				Constants.DOT_GIT));
+		System.out.println(clonedRepo.getWorkTree());
+		System.out.println(clonedRepo.getConfig().getString(
+						ConfigConstants.CONFIG_REMOTE_SECTION, "origin", "url"));
+		
+		System.out.println(clonedRepo.getConfig().getString(
+						ConfigConstants.CONFIG_REMOTE_SECTION, "origin",
+						"fetch"));
+		assertEquals(
+				"",
+				uri.toString(),
+				clonedRepo.getConfig().getString(
+						ConfigConstants.CONFIG_REMOTE_SECTION, "origin", "url"));
+		assertEquals(
+				"",
+				"+refs/heads/*:refs/remotes/origin/*",
+				clonedRepo.getConfig().getString(
+						ConfigConstants.CONFIG_REMOTE_SECTION, "origin",
+						"fetch"));
+		
+		for(Ref ref:Git.wrap(clonedRepo).branchList().call()){
+			System.out.println(ref.getName());
+		}
+		
+		clonedRepo.close();
+	}
+	
 }

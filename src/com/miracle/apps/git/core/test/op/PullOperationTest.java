@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,8 +40,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.miracle.apps.git.core.op.AddToIndexOperation;
 import com.miracle.apps.git.core.op.BranchOperation;
 import com.miracle.apps.git.core.op.CloneOperation;
+import com.miracle.apps.git.core.op.CommitOperation;
 import com.miracle.apps.git.core.op.CreateLocalBranchOperation;
 import com.miracle.apps.git.core.op.CreateLocalBranchOperation.UpstreamConfig;
 import com.miracle.apps.git.core.op.FetchOperation;
@@ -83,7 +86,7 @@ public class PullOperationTest extends GitTestCase {
 		
 		file=new File(workdir,"file1.txt");
 		FileUtils.createNewFile(file);
-		repositoryUtil.appendFileContent(file, "Hello World");
+		repositoryUtil.appendFileContent(file, "[{Hello World");
 		repositoryUtil.track(file);
 		repositoryUtil.commit("Initial Commit");
 		
@@ -193,7 +196,7 @@ public class PullOperationTest extends GitTestCase {
 	@Test
 	public void testPullOperationWithOtherLocalBranchCheckOut()throws Exception{
 		//create branch of test and check out in repository1 
-		new CreateLocalBranchOperation(repository1, "test", repository.getRef("master"), UpstreamConfig.MERGE).setCheckOutFlag(true).execute();
+		new CreateLocalBranchOperation(repository1, "test", repository1.getRef("master"), UpstreamConfig.MERGE).setCheckOutFlag(true).execute();
 		assertEquals("test", repository1.getBranch());
 		
 		//create file of file2.txt on branch of master in repository
@@ -262,4 +265,42 @@ public class PullOperationTest extends GitTestCase {
 		
 	}
 	
+	@Test
+	public void testPullOperationWithFileConflictContentAndResolved()throws Exception{
+		//modify file1.txt in repository1
+		file=new File(workdir,"file1.txt");
+		repositoryUtil.appendFileContent(file, "updating from 1}]");
+		repositoryUtil.track(file);
+		RevCommit secondcommit=repositoryUtil.commit("second Commit");
+		 
+		//modify file1.txt in repository2
+		
+		file=new File(workdir2,"file1.txt");
+		repositoryUtil1.appendFileContent(file, "adding from 2}]");
+		repositoryUtil1.track(file);
+		RevCommit thirdcommit=repositoryUtil1.commit("third Commit");
+		
+        //the repository1 pull from repository
+		System.out.println(repository1.getRepositoryState().toString());
+		PullOperation po=new PullOperation(repository1, 0,"master");
+		po.execute();
+		System.out.println(po.toString());
+		System.out.println(repository1.getRepositoryState().toString());
+		Map<String,String> map=repositoryUtil1.getConflictFileContentWithSplit(file);
+		
+		String temp=map.get("HEAD");
+		
+		FileOutputStream fos=new FileOutputStream(file);
+		fos.write(temp.getBytes());
+		fos.flush();
+		fos.close();
+		System.out.println(repository1.getRepositoryState().toString());
+		
+		new AddToIndexOperation(Arrays.asList("file1.txt"), repository1).execute();
+		System.out.println(repository1.getRepositoryState().toString());
+		CommitOperation co=new CommitOperation(repository1, AUTHOR, COMMITTER, "TEST PULL OPERATION");
+		co.setCommitAll(true);
+		co.execute();
+		System.out.println(repository1.getRepositoryState().toString());
+	}
 }
