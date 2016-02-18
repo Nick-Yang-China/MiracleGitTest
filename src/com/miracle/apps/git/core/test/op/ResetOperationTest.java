@@ -210,7 +210,7 @@ public class ResetOperationTest extends GitTestCase {
 		repositoryUtil.track(second);
 		RevCommit secondCommit=repositoryUtil.commit("second commit");
 		
-		String fileInIndexPath = fileInIndex.getAbsolutePath();
+//		String fileInIndexPath = fileInIndex.getAbsolutePath();
 		ResetOperation ro=new ResetOperation(repository, firstCommit.getName(),null).setPath("dummy.txt");
 		ro.execute();
 		

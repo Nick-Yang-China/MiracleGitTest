@@ -24,18 +24,34 @@ public abstract class GitTestCase {
 	
 	@Before
 	public void setUp() throws Exception {
-    	//
+
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		
-//		System.out.println(gitDir.getParent());
-//		
-//		if (gitDir.exists())
-//			FileUtils.delete(gitDir, FileUtils.RECURSIVE | FileUtils.RETRY);
-//		SystemReader.setInstance(null);
 	}
 
+	public boolean removeDir(String strDir) {
+        File rmDir = new File(strDir);
+        if (rmDir.isDirectory() && rmDir.exists()) {
+            String[] fileList = rmDir.list();
 
+            for (int i = 0; i < fileList.length; i++) {
+                String subFile = strDir + File.separator + fileList[i];
+                File tmp = new File(subFile);
+                if (tmp.isFile()){
+                    tmp.delete();
+                }
+                if (tmp.isDirectory()){
+                    removeDir(subFile);
+                }
+            }
+            
+            rmDir.delete();
+        } else {
+            return false;
+        }
+        return true;
+    }
 }

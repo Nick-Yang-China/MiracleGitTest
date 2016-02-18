@@ -43,7 +43,7 @@ public class CommitOperationTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		gitDir = new File("D://MLGitHome", Constants.DOT_GIT);
+		gitDir = new File("D://Repository1", Constants.DOT_GIT);
 		
 		repositoryUtil = new RepositoryUtil(gitDir);
 		
@@ -54,7 +54,7 @@ public class CommitOperationTest extends GitTestCase {
 	@After
 	public void tearDown() throws Exception {
 		repositoryUtil.dispose();
-//		repositoryUtil.removeLocalRepository(repository);
+		repositoryUtil.removeLocalRepository(repository);
 		super.tearDown();
 	}
 

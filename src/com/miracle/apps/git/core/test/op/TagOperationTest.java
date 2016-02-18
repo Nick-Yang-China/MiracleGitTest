@@ -145,7 +145,7 @@ public class TagOperationTest extends GitTestCase {
 			
 			tag=walk.parseTag(repository.resolve(tagRef.getName()));
 			
-			assertTrue("Message be same", tag.getFullMessage().equals(newTag.getMessage()));
+			assertFalse("Message should differ", tag.getFullMessage().equals(newTag.getMessage()));
 			
 			walk.dispose();
 		}

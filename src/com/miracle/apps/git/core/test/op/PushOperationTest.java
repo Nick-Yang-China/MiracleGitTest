@@ -118,9 +118,9 @@ public class PushOperationTest extends GitTestCase {
 		repository3=new FileRepository(new File(workdir3,Constants.DOT_GIT));
 		
 		
-//		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
-//		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
-//		createBranch.update();
+		RefUpdate createBranch=repository2.updateRef("refs/heads/test");
+		createBranch.setNewObjectId(repository2.resolve("refs/heads/master"));
+		createBranch.update();
 	}
 
 	@Override
@@ -218,25 +218,27 @@ public class PushOperationTest extends GitTestCase {
 		testFile = new File(workdir2, repositoryUtil.getRepoRelativePath(file.getAbsolutePath()));
 		assertTrue(testFile.exists());
 	}
-	
-	@Test
-	public void testPushWithGitHub() throws Exception {		
-		// set up push from repository1 to repository2
-		// we cannot re-use the RemoteRefUpdate!!!
-//		UsernamePasswordCredentialsProvider up=new UsernamePasswordCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
-		PushOperationSpecification spec = new PushOperationSpecification();
-		// the remote is repo2
-		URIish remote = new URIish("https://github.com/heliangjignjing2011/GitTesting.git");
-		// update master upon master
-		List<RemoteRefUpdate> refUpdates = new ArrayList<RemoteRefUpdate>();
-		RemoteRefUpdate update = new RemoteRefUpdate(repository1, "refs/heads/master","refs/heads/master", true, null, null);
-		refUpdates.add(update);
-		spec.addURIRefUpdates(remote, refUpdates);
-		// now we can construct the push operation
-		PushOperation pop = new PushOperation(repository1,spec, false, 30);
-		pop.setCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
-		pop.execute();
-	}
+	/**
+	 * For special test for github
+	 */
+//	@Test
+//	public void testPushWithGitHub() throws Exception {		
+//		// set up push from repository1 to repository2
+//		// we cannot re-use the RemoteRefUpdate!!!
+////		UsernamePasswordCredentialsProvider up=new UsernamePasswordCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
+//		PushOperationSpecification spec = new PushOperationSpecification();
+//		// the remote is repo2
+//		URIish remote = new URIish("https://github.com/heliangjignjing2011/GitTesting.git");
+//		// update master upon master
+//		List<RemoteRefUpdate> refUpdates = new ArrayList<RemoteRefUpdate>();
+//		RemoteRefUpdate update = new RemoteRefUpdate(repository1, "refs/heads/master","refs/heads/master", true, null, null);
+//		refUpdates.add(update);
+//		spec.addURIRefUpdates(remote, refUpdates);
+//		// now we can construct the push operation
+//		PushOperation pop = new PushOperation(repository1,spec, false, 30);
+//		pop.setCredentialsProvider("heliangjignjing2011", "ruzhi20141029");
+//		pop.execute();
+//	}
 	
 	private PushOperation createInvalidPushOperation() throws Exception {
 		// set up push with invalid URI to provoke an exception

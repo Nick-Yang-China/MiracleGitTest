@@ -24,14 +24,19 @@ public class AddToIndexOperationTest extends GitTestCase {
 	ArrayList<String> list=new ArrayList<>();
 
 	RepositoryUtil repositoryUtil;
-
+	File workdir;
 	@Override
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		gitDir = new File("D://MLGitHome/.git", Constants.DOT_GIT);
+		workdir= new File("D://Repository1");
 		
-		repositoryUtil = new RepositoryUtil(gitDir);
+		if(workdir.exists()){
+			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
+		}
+		FileUtils.mkdir(workdir,true);
+		
+		repositoryUtil = new RepositoryUtil(new File(workdir,Constants.DOT_GIT));
 		
 		repository=repositoryUtil.getRepository();
 	}
@@ -106,10 +111,6 @@ public class AddToIndexOperationTest extends GitTestCase {
 
 		assertFalse(repositoryUtil.inIndex(file1.getAbsolutePath()));
 		assertFalse(repositoryUtil.inIndex(file2.getAbsolutePath()));
-		
-		
-		assertTrue(repositoryUtil.inIndex(file1.getAbsolutePath()));
-		assertTrue(repositoryUtil.inIndex(file2.getAbsolutePath()));
 	}
 	
 	@Test

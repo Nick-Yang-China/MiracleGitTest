@@ -96,6 +96,7 @@ public class RepositoryCacheTest extends GitTestCase {
 		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
 		
 		assertNotNull(repository1);
+		System.out.println(repository.hashCode()+"--->"+repository1.hashCode());
 		assertEquals(repository, repository1);
 		
 	}
@@ -132,16 +133,58 @@ public class RepositoryCacheTest extends GitTestCase {
 	}
 	
 	@Test
-	public void testcloseRepo() throws Exception {
+	public void testIfTrueCloseRepo() throws Exception {
 		File file1=repository.getDirectory();
 		RepositoryCache.register(repository);
-		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED),true);
 		assertNotNull(repository1);
 		assertEquals(repository.hashCode(), repository1.hashCode());
-		RepositoryCache.close(repository);
-		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		RepositoryCache.close(repository1);
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED),true);
 		assertNotEquals(repository.hashCode(), repository1.hashCode());
-
+		
+	}
+	
+	
+	@Test
+	public void testIfNotRepositoryCreated() throws Exception {
+		File file1=repository.getDirectory();
+//		RepositoryCache.register(repository);
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		assertNotNull(repository1);
+		System.out.println(repository.hashCode()+"--->"+repository1.hashCode());
+		
+		repository2=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		System.out.println(repository1.hashCode()+"--->"+repository2.hashCode());
+		assertEquals(repository1.hashCode(), repository2.hashCode());
+		RepositoryCache.close(repository1);
+		
+		repository1=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		assertNotNull(repository1);
+		System.out.println(repository.hashCode()+"--->"+repository1.hashCode());
+		
+		repository2=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		System.out.println(repository1.hashCode()+"--->"+repository2.hashCode());
+		assertEquals(repository1.hashCode(), repository2.hashCode());
+	}
+	
+	@Test
+	public void testIfNotRepositoryCreatedWithMulti() throws Exception {
+		System.out.println(repository.hashCode());
+		
+		File file1=repository.getDirectory();
+		
+		repositoryUtil=new RepositoryUtil(file1);
+		
+		repository1=repositoryUtil.getRepository();
+		
+		System.out.println(repository1.hashCode());
+		
+		repositoryUtil.dispose();
+//		repositoryUtil.closeRepositoryInCache(repository1);
+		repository2=RepositoryCache.open(FileKey.exact(file1, FS.DETECTED));
+		
+		System.out.println(repository2.hashCode());
 		
 	}
 }

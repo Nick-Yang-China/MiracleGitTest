@@ -30,7 +30,7 @@ public class RemoveFromIndexOperationTest extends GitTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		gitDir = new File("D://MLGitHome", Constants.DOT_GIT);
+		gitDir = new File("D://Repository1", Constants.DOT_GIT);
 		
 		repositoryUtil = new RepositoryUtil(gitDir);
 		
@@ -41,16 +41,36 @@ public class RemoveFromIndexOperationTest extends GitTestCase {
 	@After
 	public void tearDown() throws Exception {
 		repositoryUtil.dispose();
-//		RepositoryUtil.removeLocalRepository(repository);
+		repositoryUtil.removeLocalRepository(repository);
 		super.tearDown();
 	}
 
 	@Test
 	public void testUntrackFile() throws Exception {
-		
 		File file1 = new File(repository.getWorkTree(), "a.txt");
+		FileUtils.createNewFile(file1);
+		PrintWriter writer = new PrintWriter(file1);
+		writer.print("content a");
+		writer.close();
 		
 		File file2 = new File(repository.getWorkTree(), "b.txt");
+		FileUtils.createNewFile(file2);
+		writer = new PrintWriter(file2);
+		writer.print("content b");
+		writer.close();
+		
+		list.add(repositoryUtil.getRepoRelativePath(file1.getAbsolutePath()));
+		list.add(repositoryUtil.getRepoRelativePath(file2.getAbsolutePath()));
+		
+		assertFalse(repositoryUtil.inIndex(file1.getAbsolutePath()));
+		assertFalse(repositoryUtil.inIndex(file2.getAbsolutePath()));
+		
+		new AddToIndexOperation(list, repository).execute();
+		
+		
+		 file1 = new File(repository.getWorkTree(), "a.txt");
+		
+		 file2 = new File(repository.getWorkTree(), "b.txt");
 		
 		list.add(repositoryUtil.getRepoRelativePath(file1.getAbsolutePath()));
 		list.add(repositoryUtil.getRepoRelativePath(file2.getAbsolutePath()));
@@ -67,9 +87,32 @@ public class RemoveFromIndexOperationTest extends GitTestCase {
 
 	@Test
 	public void testUntrackFilesInFolder() throws Exception {
+		FileUtils.mkdir(new File(repository.getWorkTree(), "sub"));
 		File file1 = new File(repository.getWorkTree(), "sub/c.txt");
+		FileUtils.createNewFile(file1);
+		PrintWriter writer = new PrintWriter(file1);
+		writer.print("content c");
+		writer.close();
 
 		File file2 = new File(repository.getWorkTree(), "sub/d.txt");
+		FileUtils.createNewFile(file2);
+		writer = new PrintWriter(file2);
+		writer.print("content d");
+		writer.close();
+
+		list.add(repositoryUtil.getRepoRelativePath(file1.getAbsolutePath()));
+		list.add(repositoryUtil.getRepoRelativePath(file2.getAbsolutePath()));
+		
+		assertFalse(repositoryUtil.inIndex(file1.getAbsolutePath()));
+		assertFalse(repositoryUtil.inIndex(file2.getAbsolutePath()));
+		
+		new AddToIndexOperation(list, repository).execute();
+		
+		
+		
+		file1 = new File(repository.getWorkTree(), "sub/c.txt");
+
+		file2 = new File(repository.getWorkTree(), "sub/d.txt");
 
 		list.add(repositoryUtil.getRepoRelativePath(file1.getAbsolutePath()));
 		list.add(repositoryUtil.getRepoRelativePath(file2.getAbsolutePath()));
@@ -93,9 +136,6 @@ public class RemoveFromIndexOperationTest extends GitTestCase {
 		assertFalse(repositoryUtil.inIndex(file1.getAbsolutePath()));
 		assertFalse(repositoryUtil.inIndex(file2.getAbsolutePath()));
 		
-		
-		assertTrue(repositoryUtil.inIndex(file1.getAbsolutePath()));
-		assertTrue(repositoryUtil.inIndex(file2.getAbsolutePath()));
 	}
 	
 	@Test

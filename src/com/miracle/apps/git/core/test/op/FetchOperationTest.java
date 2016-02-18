@@ -51,7 +51,7 @@ public class FetchOperationTest extends GitTestCase {
 		}
 		FileUtils.mkdir(workdir,true);
 		
-		workdir2= new File("D:/Repository2");
+		workdir2= new File("D://Repository2");
 		
 		if(workdir2.exists()){
 			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
@@ -87,14 +87,26 @@ public class FetchOperationTest extends GitTestCase {
 		if(repository!=null)
 			repository.close();
 		
-		if(repository1!=null)
-			repository1.close();
-		
 		if (workdir.exists())
 			FileUtils.delete(workdir, FileUtils.RECURSIVE | FileUtils.RETRY);
-		if (workdir2.exists())
+		
+		if(repository1!=null){
+			repository1.close();
+			repository1=null;
+		}
+		if (workdir2.exists()){
+			
+//			workdir2.deleteOnExit();
+//			String cmd = "cmd /c rd/s/q "+ workdir2.getAbsolutePath();
+//			Runtime.getRuntime().exec(cmd);
+//			System.gc();
+//			Runtime.getRuntime().exec(cmd);
+//			Runtime.getRuntime().gc();
+//			System.gc();
+//			System.out.println(removeDir(workdir2.getAbsolutePath()));
 			FileUtils.delete(workdir2, FileUtils.RECURSIVE | FileUtils.RETRY);
-		super.tearDown();
+		}
+		
 	}
 	
 	@Test
